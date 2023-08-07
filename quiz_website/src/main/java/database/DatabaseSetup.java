@@ -72,7 +72,7 @@ public class DatabaseSetup {
                 "username VARCHAR(255) NOT NULL UNIQUE," +
                 "passwordHash VARCHAR(255) NOT NULL," +
                 "email VARCHAR(255) NOT NULL UNIQUE," +
-                "dateCreated TIMESTAMP DEFAULT CURRENT_TIMESTAMP," +
+                "dateRegistered TIMESTAMP DEFAULT CURRENT_TIMESTAMP," +
                 "isAdmin BOOLEAN DEFAULT FALSE" +
                 ")";
         stmt.executeUpdate(createUsersSQL);

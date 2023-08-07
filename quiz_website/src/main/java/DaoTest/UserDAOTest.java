@@ -2,34 +2,41 @@ package DaoTest;
 
 import model.User;
 import Dao.UserDAO;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class UserDAOTest {
 
     private UserDAO userDAO;
-
+    private Random random;
 
     @BeforeEach
     void setUp() {
         userDAO = new UserDAO();
+        random = new Random();
         // Reset the test database or use a test-specific configuration if necessary
+    }
+
+    @AfterEach
+    void tearDown() {
+        // You can delete test users here or reset the test database to its initial state.
     }
 
     @Test
     void testAddUser() {
-        User newUser = new User("testUsername123", "testPasswordHash", "test123@email.com", Timestamp.valueOf(LocalDateTime.now()),false);
+        User newUser = createRandomTestUser();
         assertTrue(userDAO.createUser(newUser));
     }
 
     @Test
     void testGetUserById() {
-        User newUser = new User("testUsername324", "testPasswordHash", "test324@email.com", Timestamp.valueOf(LocalDateTime.now()),false);
+        User newUser = createRandomTestUser();
         userDAO.createUser(newUser);
 
         User retrievedUser = userDAO.getUserByUsername(newUser.getUsername());
@@ -38,22 +45,27 @@ class UserDAOTest {
 
     @Test
     void testUpdateUser() {
-        User newUser = new User("testUsername45", "testPasswordHash", "test45@email.com", Timestamp.valueOf(LocalDateTime.now()),false);
+        User newUser = createRandomTestUser();
         userDAO.createUser(newUser);
 
-        newUser.setUsername("updatedUsername");
+        newUser.setUsername("updatedUsername" + random.nextInt(1000));
         assertTrue(userDAO.updateUser(newUser));
 
         User updatedUser = userDAO.getUserById(newUser.getUserId());
-        assertEquals("updatedUsername", updatedUser.getUsername());
+        assertEquals(newUser.getUsername(), updatedUser.getUsername());
     }
 
     @Test
     void testDeleteUser() {
-        User newUser = new User("testUsername65", "testPasswordHash", "test65@email.com", Timestamp.valueOf(LocalDateTime.now()),false);
+        User newUser = createRandomTestUser();
         userDAO.createUser(newUser);
         assertTrue(userDAO.deleteUser(newUser.getUserId()));
 
         assertNull(userDAO.getUserById(newUser.getUserId()));
+    }
+
+    private User createRandomTestUser() {
+        String randomSuffix = String.valueOf(random.nextInt(10000));
+        return new User(null, "testUsername" + randomSuffix, "testPasswordHash", "test" + randomSuffix + "@email.com", LocalDateTime.now(), false);
     }
 }
