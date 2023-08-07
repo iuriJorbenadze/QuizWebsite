@@ -83,8 +83,9 @@ public class DatabaseSetup {
                 "id INT AUTO_INCREMENT PRIMARY KEY," +
                 "title VARCHAR(255) NOT NULL," +
                 "description TEXT," +
-                "creatorId INT," +
-                "FOREIGN KEY(creatorId) REFERENCES Users(id)" +
+                "createdByUserId INT," +
+                "createdDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP," +
+                "FOREIGN KEY(createdByUserId) REFERENCES Users(id)" +
                 ")";
         stmt.executeUpdate(createQuizSQL);
     }

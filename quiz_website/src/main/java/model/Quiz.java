@@ -10,6 +10,16 @@ public class Quiz {
     private LocalDateTime createdDate;
 
     // Constructor
+    public Quiz() {
+    }
+
+    public Quiz(String title, String description, Long createdByUserId, LocalDateTime createdDate) {
+        this.title = title;
+        this.description = description;
+        this.createdByUserId = createdByUserId;
+        this.createdDate = createdDate;
+    }
+
     public Quiz(Long quizId, String title, String description, Long createdByUserId, LocalDateTime createdDate) {
         this.quizId = quizId;
         this.title = title;
