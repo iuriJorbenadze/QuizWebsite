@@ -1,25 +1,24 @@
 package model;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 public class User {
     private Long userId;
     private String username;
     private String passwordHash; // Store the hash, not the actual password.
     private String email;
-    private Date dateRegistered;
+    private LocalDateTime dateRegistered;
     // Other profile-related fields: first name, last name, profile picture, etc.
 
-    // Getters, Setters, and Constructors
-
     // Constructor
-    public User(Long userId, String username, String passwordHash, String email, Date dateRegistered) {
+    public User(Long userId, String username, String passwordHash, String email, LocalDateTime dateRegistered) {
         this.userId = userId;
         this.username = username;
         this.passwordHash = passwordHash;
         this.email = email;
         this.dateRegistered = dateRegistered;
     }
+
 
     public Long getUserId() {
         return userId;
@@ -53,11 +52,11 @@ public class User {
         this.email = email;
     }
 
-    public Date getDateRegistered() {
+    public LocalDateTime getDateRegistered() {
         return dateRegistered;
     }
 
-    public void setDateRegistered(Date dateRegistered) {
+    public void setDateRegistered(LocalDateTime dateRegistered) {
         this.dateRegistered = dateRegistered;
     }
 

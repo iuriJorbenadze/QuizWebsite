@@ -1,22 +1,24 @@
 package model;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 public class Quiz {
     private Long quizId;
     private String title;
     private String description;
     private Long createdByUserId;
-    private Date createdDate;
+    private LocalDateTime createdDate;
 
     // Constructor
-    public Quiz(Long quizId, String title, String description, Long createdByUserId, Date createdDate) {
+    public Quiz(Long quizId, String title, String description, Long createdByUserId, LocalDateTime createdDate) {
         this.quizId = quizId;
         this.title = title;
         this.description = description;
         this.createdByUserId = createdByUserId;
         this.createdDate = createdDate;
     }
+
+
 
     public Long getQuizId() {
         return quizId;
@@ -50,11 +52,12 @@ public class Quiz {
         this.createdByUserId = createdByUserId;
     }
 
-    public Date getCreatedDate() {
+
+    public LocalDateTime getCreatedDate() {
         return createdDate;
     }
 
-    public void setCreatedDate(Date createdDate) {
+    public void setCreatedDate(LocalDateTime createdDate) {
         this.createdDate = createdDate;
     }
 

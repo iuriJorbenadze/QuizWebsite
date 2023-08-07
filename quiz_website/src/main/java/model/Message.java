@@ -1,17 +1,17 @@
 package model;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 public class Message {
     private Long messageId;
     private Long senderId;
     private Long receiverId;
     private String content;
-    private Date sentDate;
+    private LocalDateTime sentDate;
     private boolean isRead;
 
     // Constructor
-    public Message(Long messageId, Long senderId, Long receiverId, String content, Date sentDate, boolean isRead) {
+    public Message(Long messageId, Long senderId, Long receiverId, String content, LocalDateTime sentDate, boolean isRead) {
         this.messageId = messageId;
         this.senderId = senderId;
         this.receiverId = receiverId;
@@ -19,6 +19,7 @@ public class Message {
         this.sentDate = sentDate;
         this.isRead = isRead;
     }
+
 
     public Long getMessageId() {
         return messageId;
@@ -52,11 +53,11 @@ public class Message {
         this.content = content;
     }
 
-    public Date getSentDate() {
+    public LocalDateTime getSentDate() {
         return sentDate;
     }
 
-    public void setSentDate(Date sentDate) {
+    public void setSentDate(LocalDateTime sentDate) {
         this.sentDate = sentDate;
     }
 

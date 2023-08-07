@@ -1,18 +1,34 @@
 package model;
 
+import java.util.List;
+
 public class Question {
     private Long questionId;
     private Long quizId;
     private String content;
-    private String correctAnswer;
+    private List<String> options;  // List of answer options
+    private String correctAnswer;  // Assuming single correct answer for now
 
     // Constructor
-    public Question(Long questionId, Long quizId, String content, String correctAnswer) {
+    public Question(Long questionId, Long quizId, String content, List<String> options, String correctAnswer) {
         this.questionId = questionId;
         this.quizId = quizId;
         this.content = content;
+        this.options = options;
         this.correctAnswer = correctAnswer;
     }
+
+
+
+    public List<String> getOptions() {
+        return options;
+    }
+
+    public void setOptions(List<String> options) {
+        this.options = options;
+    }
+
+
 
     public Long getQuestionId() {
         return questionId;
@@ -52,6 +68,7 @@ public class Question {
                 "questionId=" + questionId +
                 ", quizId=" + quizId +
                 ", content='" + content + '\'' +
+                ", options=" + options.toString() +
                 ", correctAnswer='" + correctAnswer + '\'' +
                 '}';
     }

@@ -1,22 +1,23 @@
 package model;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 public class TakenQuiz {
     private Long takenQuizId;
     private Long userId;
     private Long quizId;
     private int score;
-    private Date attemptDate;
+    private LocalDateTime attemptDate;
 
     // Constructor
-    public TakenQuiz(Long takenQuizId, Long userId, Long quizId, int score, Date attemptDate) {
+    public TakenQuiz(Long takenQuizId, Long userId, Long quizId, int score, LocalDateTime attemptDate) {
         this.takenQuizId = takenQuizId;
         this.userId = userId;
         this.quizId = quizId;
         this.score = score;
         this.attemptDate = attemptDate;
     }
+
 
     public Long getTakenQuizId() {
         return takenQuizId;
@@ -50,11 +51,11 @@ public class TakenQuiz {
         this.score = score;
     }
 
-    public Date getAttemptDate() {
+    public LocalDateTime getAttemptDate() {
         return attemptDate;
     }
 
-    public void setAttemptDate(Date attemptDate) {
+    public void setAttemptDate(LocalDateTime attemptDate) {
         this.attemptDate = attemptDate;
     }
 
