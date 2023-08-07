@@ -10,20 +10,28 @@ import java.io.IOException;
 
 public class DatabaseSetup {
 
+    private String jdbcBaseURL;
     private String jdbcURL;
     private String jdbcUsername;
     private String jdbcPassword;
+    private String dbName;
 
     public DatabaseSetup() {
         try {
             Properties properties = new Properties();
             properties.load(new FileInputStream("src/main/resources/database.properties"));
+            jdbcBaseURL = properties.getProperty("db.baseurl");
             jdbcURL = properties.getProperty("db.url");
             jdbcUsername = properties.getProperty("db.user");
             jdbcPassword = properties.getProperty("db.password");
+            dbName = properties.getProperty("db.name");
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private Connection getBaseConnection() throws SQLException {
+        return DriverManager.getConnection(jdbcBaseURL, jdbcUsername, jdbcPassword);
     }
 
     private Connection getConnection() throws SQLException {
@@ -31,19 +39,32 @@ public class DatabaseSetup {
     }
 
     public void setupDatabase() {
-        try (Connection connection = getConnection(); Statement stmt = connection.createStatement()) {
-            createUsersTable(stmt);
-            createQuizTable(stmt);
-            createQuestionsTable(stmt);
-            createOptionsTable(stmt);
-            createTakenQuizTable(stmt);
-            createMessagesTable(stmt);
-            createAchievementsTable(stmt);
-            createFriendsTable(stmt);
-        } catch (SQLException ex) {
-            ex.printStackTrace();
+        try (Connection baseConnection = getBaseConnection(); Statement stmt = baseConnection.createStatement()) {
+            // Check and create the database if it doesn't exist
+            String checkDatabaseQuery = "CREATE DATABASE IF NOT EXISTS " + dbName;
+            stmt.executeUpdate(checkDatabaseQuery);
+
+            // Now that we ensured the database exists, let's create tables in it
+            try (Connection connection = getConnection(); Statement stmt2 = connection.createStatement()) {
+                createUsersTable(stmt2);
+                createQuizTable(stmt2);
+                createQuestionsTable(stmt2);
+                createOptionsTable(stmt2);
+                createTakenQuizTable(stmt2);
+                createMessagesTable(stmt2);
+                createAchievementsTable(stmt2);
+                createFriendsTable(stmt2);
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
+
+
+
 
     private void createUsersTable(Statement stmt) throws SQLException {
         String createUsersSQL = "CREATE TABLE IF NOT EXISTS Users(" +
