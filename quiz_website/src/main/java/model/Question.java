@@ -3,11 +3,24 @@ package model;
 import java.util.List;
 
 public class Question {
+
+    //TODO come up with a solution for different variations of questions, fill in question, open ended and so on
+
     private Long questionId;
     private Long quizId;
     private String content;
     private List<String> options;  // List of answer options
     private String correctAnswer;  // Assuming single correct answer for now
+
+    // Constructor without questionId
+    public Question(Long quizId, String content, List<String> options, String correctAnswer) {
+        this.quizId = quizId;
+        this.content = content;
+        this.options = options;
+        this.correctAnswer = correctAnswer;
+    }
+
+
 
     // Constructor
     public Question(Long questionId, Long quizId, String content, List<String> options, String correctAnswer) {
@@ -30,6 +43,7 @@ public class Question {
 
 
 
+    // Getter and Setter for questionId
     public Long getQuestionId() {
         return questionId;
     }
@@ -37,7 +51,6 @@ public class Question {
     public void setQuestionId(Long questionId) {
         this.questionId = questionId;
     }
-
     public Long getQuizId() {
         return quizId;
     }

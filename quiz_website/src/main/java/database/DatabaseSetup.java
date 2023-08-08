@@ -94,7 +94,7 @@ public class DatabaseSetup {
         String createQuestionsSQL = "CREATE TABLE IF NOT EXISTS Questions(" +
                 "id INT AUTO_INCREMENT PRIMARY KEY," +
                 "quizId INT NOT NULL," +
-                "questionText TEXT NOT NULL," +
+                "content TEXT NOT NULL," +
                 "correctOptionId INT," +
                 "FOREIGN KEY(quizId) REFERENCES Quizzes(id)" +
                 ")";

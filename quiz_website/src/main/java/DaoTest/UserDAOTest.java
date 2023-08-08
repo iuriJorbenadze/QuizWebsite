@@ -25,7 +25,7 @@ class UserDAOTest {
 
     @AfterEach
     void tearDown() {
-        // You can delete test users here or reset the test database to its initial state.
+        // we can delete test users here or reset the test database to its initial state.
     }
 
     @Test
