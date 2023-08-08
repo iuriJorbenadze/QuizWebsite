@@ -89,4 +89,39 @@ public class TakenQuizDAOTest {
         List<TakenQuiz> takenQuizzes = takenQuizDAO.getTakenQuizzesForUserOnDate(userId, today);
         assertEquals(initialCount+2, takenQuizzes.size());
     }
+
+
+
+
+    @Test
+    public void testDeleteTakenQuiz() {
+        TakenQuiz quiz = new TakenQuiz(null, userId, quizId, 80,
+                LocalDateTime.now(), Duration.ofMinutes(12), "Test Delete Quiz", "Completed");
+
+        Long createdId = takenQuizDAO.createTakenQuiz(quiz);
+        TakenQuiz retrievedQuiz = takenQuizDAO.getTakenQuizById(createdId);
+        assertNotNull(retrievedQuiz);
+
+        boolean result = takenQuizDAO.deleteTakenQuizById(retrievedQuiz.getTakenQuizId());
+        assertTrue(result);
+
+        TakenQuiz afterDelete = takenQuizDAO.getTakenQuizById(createdId);
+        assertNull(afterDelete);
+    }
+
+
+    @Test
+    public void testGetNonExistentTakenQuiz() {
+        TakenQuiz nonExistent = takenQuizDAO.getTakenQuizById(-1L);  // An ID that shouldn't exist
+        assertNull(nonExistent);
+    }
+
+    @Test
+    public void testUpdateNonExistentTakenQuiz() {
+        TakenQuiz nonExistentQuiz = new TakenQuiz(-1L, userId, quizId, 80,
+                LocalDateTime.now(), Duration.ofMinutes(10), "Doesn't Exist", "Completed");
+
+        boolean result = takenQuizDAO.updateTakenQuiz(nonExistentQuiz);
+        assertFalse(result);
+    }
 }
