@@ -13,6 +13,8 @@ class QuizDAOTest {
 
     private QuizDAO quizDAO;
 
+    //TODO add user creation into db before testing quiz
+    //should have some users created in database otherwise those tests will fail, because quiz is created by user
     @BeforeEach
     void setUp() {
         quizDAO = new QuizDAO();
