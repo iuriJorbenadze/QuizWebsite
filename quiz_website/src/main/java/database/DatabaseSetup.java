@@ -118,11 +118,16 @@ public class DatabaseSetup {
                 "quizId INT NOT NULL," +
                 "score INT NOT NULL," +
                 "dateTaken TIMESTAMP DEFAULT CURRENT_TIMESTAMP," +
+                "timeTaken BIGINT," +  // storing duration as seconds
+                "feedback TEXT," +
+                "status VARCHAR(255)," +
                 "FOREIGN KEY(userId) REFERENCES Users(id)," +
                 "FOREIGN KEY(quizId) REFERENCES Quizzes(id)" +
                 ")";
         stmt.executeUpdate(createTakenQuizSQL);
     }
+
+
 
     private void createMessagesTable(Statement stmt) throws SQLException {
         String createMessagesSQL = "CREATE TABLE IF NOT EXISTS Messages(" +
