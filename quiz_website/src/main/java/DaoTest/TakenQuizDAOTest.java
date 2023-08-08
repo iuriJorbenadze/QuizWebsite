@@ -14,31 +14,34 @@ import java.util.List;
 public class TakenQuizDAOTest {
 
     private TakenQuizDAO takenQuizDAO;
-    private Long userId;   // Assuming a user already exists in the DB with this ID.
-    private Long quizId;   // Assuming a quiz already exists in the DB with this ID.
+    private Long userId = 1L;
+    private Long quizId = 1L;
 
     @BeforeEach
     public void setup() {
-        // Initialize your DAO. It's good to clear the database here or set up a mock DB.
         takenQuizDAO = new TakenQuizDAO();
     }
 
     @Test
     public void testCreateAndGetTakenQuiz() {
-        TakenQuiz takenQuiz = new
-                TakenQuiz(1L, userId, quizId, 90,
+
+        TakenQuiz takenQuiz = new TakenQuiz(null, userId, quizId, 90,
                 LocalDateTime.now(), Duration.ofMinutes(15), "Good Quiz", "Completed");
 
-        // Test creation
+
+
         Long createdId = takenQuizDAO.createTakenQuiz(takenQuiz);
         assertNotNull(createdId);
 
-        // Test retrieval
+
         TakenQuiz retrievedQuiz = takenQuizDAO.getTakenQuizById(createdId);
-        assertEquals(takenQuiz.getUserId(), retrievedQuiz.getUserId());
-        assertEquals(takenQuiz.getQuizId(), retrievedQuiz.getQuizId());
-        assertEquals(takenQuiz.getScore(), retrievedQuiz.getScore());
+        assertNotNull(retrievedQuiz);
+        assertNotNull(retrievedQuiz.getTakenQuizId());
+        assertEquals(userId, retrievedQuiz.getUserId());
+        assertEquals(quizId, retrievedQuiz.getQuizId());
+        assertEquals(90, retrievedQuiz.getScore());
     }
+
 
     @Test
     public void testUpdateTakenQuiz() {
@@ -73,6 +76,8 @@ public class TakenQuizDAOTest {
     public void testGetTakenQuizzesForUserOnDate() {
         LocalDateTime today = LocalDateTime.now();
 
+        int initialCount = takenQuizDAO.getAllTakenQuizzesForQuiz(1L).size();
+
         TakenQuiz quiz1 = new TakenQuiz(null, userId, quizId, 85,
                 today.minusHours(2), Duration.ofMinutes(10), "Morning Quiz", "Completed");
         TakenQuiz quiz2 = new TakenQuiz(null, userId, quizId, 95,
@@ -82,8 +87,6 @@ public class TakenQuizDAOTest {
         takenQuizDAO.createTakenQuiz(quiz2);
 
         List<TakenQuiz> takenQuizzes = takenQuizDAO.getTakenQuizzesForUserOnDate(userId, today);
-        assertEquals(2, takenQuizzes.size());
+        assertEquals(initialCount+2, takenQuizzes.size());
     }
-
-    // ... Add more tests as needed ...
 }
