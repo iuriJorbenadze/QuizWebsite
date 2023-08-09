@@ -4,14 +4,14 @@ import java.time.LocalDateTime;
 
 public class Message {
     private Long messageId;
-    private Long senderId;
-    private Long receiverId;
+    private int senderId;
+    private int receiverId;
     private String content;
     private LocalDateTime sentDate;
     private boolean isRead;
 
     // Constructor
-    public Message(Long messageId, Long senderId, Long receiverId, String content, LocalDateTime sentDate, boolean isRead) {
+    public Message(Long messageId, int senderId, int receiverId, String content, LocalDateTime sentDate, boolean isRead) {
         this.messageId = messageId;
         this.senderId = senderId;
         this.receiverId = receiverId;
@@ -29,19 +29,19 @@ public class Message {
         this.messageId = messageId;
     }
 
-    public Long getSenderId() {
+    public int getSenderId() {
         return senderId;
     }
 
-    public void setSenderId(Long senderId) {
+    public void setSenderId(int senderId) {
         this.senderId = senderId;
     }
 
-    public Long getReceiverId() {
+    public int getReceiverId() {
         return receiverId;
     }
 
-    public void setReceiverId(Long receiverId) {
+    public void setReceiverId(int receiverId) {
         this.receiverId = receiverId;
     }
 
