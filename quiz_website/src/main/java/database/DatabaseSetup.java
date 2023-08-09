@@ -133,11 +133,15 @@ public class DatabaseSetup {
                 "messageText TEXT NOT NULL," +
                 "dateSent TIMESTAMP DEFAULT CURRENT_TIMESTAMP," +
                 "isRead BOOLEAN DEFAULT FALSE," +
+                "type VARCHAR(20) NOT NULL," +
+                "relatedQuizId INT," +
+                "challengeScore INT," +
                 "FOREIGN KEY(senderId) REFERENCES Users(id)," +
                 "FOREIGN KEY(receiverId) REFERENCES Users(id)" +
                 ")";
         stmt.executeUpdate(createMessagesSQL);
     }
+
 
     private void createAchievementsTable(Statement stmt) throws SQLException {
         String createAchievementsSQL = "CREATE TABLE IF NOT EXISTS Achievements(" +

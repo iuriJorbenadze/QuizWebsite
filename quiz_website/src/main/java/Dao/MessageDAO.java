@@ -23,7 +23,7 @@ public class MessageDAO extends AbstractDAO {
     }
 
     public Long createMessage(Message message) {
-        String SQL = "INSERT INTO Messages(senderId, receiverId, messageText, dateSent, isRead) VALUES(?, ?, ?, ?, ?)";
+        String SQL = "INSERT INTO Messages(senderId, receiverId, messageText, dateSent, isRead, type, relatedQuizId, challengeScore) VALUES(?, ?, ?, ?, ?, ?, ?, ?)";
         long id = 0;
 
         try (Connection conn = getConnection();
@@ -34,6 +34,9 @@ public class MessageDAO extends AbstractDAO {
             pstmt.setString(3, message.getContent());
             pstmt.setTimestamp(4, Timestamp.valueOf(message.getSentDate()));
             pstmt.setBoolean(5, message.isRead());
+            pstmt.setString(6, message.getType().name());
+            pstmt.setObject(7, message.getRelatedQuizId(), Types.INTEGER); // using setObject for potential null values
+            pstmt.setObject(8, message.getChallengeScore(), Types.INTEGER); // using setObject for potential null values
 
             int affectedRows = pstmt.executeUpdate();
 
@@ -54,6 +57,7 @@ public class MessageDAO extends AbstractDAO {
         return id;
     }
 
+
     public Message getMessageById(long messageId) {
         Message message = null;
         String SQL = "SELECT * FROM Messages WHERE id = ?";
@@ -71,8 +75,11 @@ public class MessageDAO extends AbstractDAO {
                 String content = rs.getString("messageText");
                 LocalDateTime sentDate = rs.getTimestamp("dateSent").toLocalDateTime();
                 boolean isRead = rs.getBoolean("isRead");
+                Message.MessageType type = Message.MessageType.valueOf(rs.getString("type"));
+                Integer relatedQuizId = (Integer) rs.getObject("relatedQuizId");
+                Integer challengeScore = (Integer) rs.getObject("challengeScore");
 
-                message = new Message(messageId, senderId, receiverId, content, sentDate, isRead);
+                message = new Message(messageId, senderId, receiverId, content, sentDate, isRead, type, relatedQuizId, challengeScore);
             }
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
@@ -80,6 +87,7 @@ public class MessageDAO extends AbstractDAO {
 
         return message;
     }
+
 
     public boolean markMessageAsRead(Long messageId) {
         String SQL = "UPDATE Messages SET isRead = ? WHERE id = ?";
@@ -119,8 +127,11 @@ public class MessageDAO extends AbstractDAO {
                 String content = rs.getString("messageText");
                 LocalDateTime sentDate = rs.getTimestamp("dateSent").toLocalDateTime();
                 boolean isRead = rs.getBoolean("isRead");
+                Message.MessageType type = Message.MessageType.valueOf(rs.getString("type"));
+                Integer relatedQuizId = (Integer) rs.getObject("relatedQuizId");
+                Integer challengeScore = (Integer) rs.getObject("challengeScore");
 
-                messages.add(new Message(messageId, senderId, receiverId, content, sentDate, isRead));
+                messages.add(new Message(messageId, senderId, receiverId, content, sentDate, isRead, type, relatedQuizId, challengeScore));
             }
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
@@ -128,6 +139,7 @@ public class MessageDAO extends AbstractDAO {
 
         return messages;
     }
+
 
     public List<Message> getUnreadMessagesForUser(int userId) {
         List<Message> messages = new ArrayList<>();
@@ -147,8 +159,11 @@ public class MessageDAO extends AbstractDAO {
                 String content = rs.getString("messageText");
                 LocalDateTime sentDate = rs.getTimestamp("dateSent").toLocalDateTime();
                 boolean isRead = rs.getBoolean("isRead");
+                Message.MessageType type = Message.MessageType.valueOf(rs.getString("type"));
+                Integer relatedQuizId = (Integer) rs.getObject("relatedQuizId");
+                Integer challengeScore = (Integer) rs.getObject("challengeScore");
 
-                messages.add(new Message(messageId, senderId, receiverId, content, sentDate, isRead));
+                messages.add(new Message(messageId, senderId, receiverId, content, sentDate, isRead, type, relatedQuizId, challengeScore));
             }
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
@@ -178,8 +193,11 @@ public class MessageDAO extends AbstractDAO {
                 String content = rs.getString("messageText");
                 LocalDateTime sentDate = rs.getTimestamp("dateSent").toLocalDateTime();
                 boolean isRead = rs.getBoolean("isRead");
+                Message.MessageType type = Message.MessageType.valueOf(rs.getString("type"));
+                Integer relatedQuizId = (Integer) rs.getObject("relatedQuizId");
+                Integer challengeScore = (Integer) rs.getObject("challengeScore");
 
-                messages.add(new Message(messageId, senderId, receiverId, content, sentDate, isRead));
+                messages.add(new Message(messageId, senderId, receiverId, content, sentDate, isRead, type, relatedQuizId, challengeScore));
             }
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
@@ -187,6 +205,7 @@ public class MessageDAO extends AbstractDAO {
 
         return messages;
     }
+
 
     public boolean deleteMessage(Long messageId) {
         String SQL = "DELETE FROM Messages WHERE id = ?";
