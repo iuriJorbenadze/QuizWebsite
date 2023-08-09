@@ -19,16 +19,18 @@ public class Message {
     private Integer relatedQuizId; // Used for challenge messages.
     private Integer challengeScore; // Used for challenge messages.
 
-    // New getters and setters for these fields.
 
-    // Modify constructor
     public Message(Long messageId, int senderId, int receiverId, String content, LocalDateTime sentDate, boolean isRead, MessageType type, Integer relatedQuizId, Integer challengeScore) {
-        // Existing assignments
+        this.messageId = messageId;
+        this.senderId = senderId;
+        this.receiverId = receiverId;
+        this.content = content;
+        this.sentDate = sentDate;
+        this.isRead = isRead;
         this.type = type;
         this.relatedQuizId = relatedQuizId;
         this.challengeScore = challengeScore;
     }
-
 
     public Long getMessageId() {
         return messageId;
