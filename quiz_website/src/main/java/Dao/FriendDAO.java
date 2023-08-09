@@ -14,36 +14,53 @@ import java.util.List;
 
 public class FriendDAO extends AbstractDAO {
 
+
     public int createFriendship(Friend friend) {
-        String insertSQL = "INSERT INTO Friends (user1Id, user2Id, status, createdDate,acceptedDate) VALUES (?, ?, ?, ?,?)";
+        String insertSQL = "INSERT INTO Friends (user1Id, user2Id, status, createdDate, acceptedDate) VALUES (?, ?, ?, ?, ?)";
         try (Connection connection = getConnection();
              PreparedStatement ps = connection.prepareStatement(insertSQL, Statement.RETURN_GENERATED_KEYS)) {
 
+            // Insert (user1, user2)
             ps.setInt(1, friend.getUser1Id());
             ps.setInt(2, friend.getUser2Id());
             ps.setString(3, friend.getStatus().toString());
             ps.setTimestamp(4, java.sql.Timestamp.valueOf(friend.getCreatedDate()));
             ps.setTimestamp(5, java.sql.Timestamp.valueOf(friend.getAcceptedDate()));
-
             int affectedRows = ps.executeUpdate();
+
+
+            //IMPORTANT
+            //IGNORING SECOND ID
+            int friendshipId;
+            try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    friend.setId(generatedKeys.getInt(1));
+                    friendshipId = friend.getId();
+                } else {
+                    throw new SQLException("Creating friend failed, no ID obtained.");
+                }
+            }
+
+
+            // Insert (user2, user1)
+            ps.setInt(1, friend.getUser2Id());
+            ps.setInt(2, friend.getUser1Id());
+            ps.executeUpdate();
 
             if (affectedRows == 0) {
                 throw new SQLException("Creating friend failed, no rows affected.");
             }
 
-            try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
-                if (generatedKeys.next()) {
-                    friend.setId(generatedKeys.getInt(1));
-                    return friend.getId();
-                } else {
-                    throw new SQLException("Creating friend failed, no ID obtained.");
-                }
-            }
+            //IMPORTANT
+            return friendshipId;
+
         } catch (SQLException e) {
             e.printStackTrace();
             return -1;
         }
     }
+
+
 
     public Friend getFriendshipById(int id) {
         String selectSQL = "SELECT * FROM Friends WHERE id=?";
@@ -62,14 +79,18 @@ public class FriendDAO extends AbstractDAO {
         return null;
     }
 
+
     public boolean updateFriendshipStatus(Friend friend) {
-        String updateSQL = "UPDATE Friends SET status=?, acceptedDate=? WHERE id=?";
+        String updateSQL = "UPDATE Friends SET status=?, acceptedDate=? WHERE (user1Id=? AND user2Id=?) OR (user1Id=? AND user2Id=?)";
         try (Connection connection = getConnection();
              PreparedStatement ps = connection.prepareStatement(updateSQL)) {
 
             ps.setString(1, friend.getStatus().toString());
             ps.setTimestamp(2, java.sql.Timestamp.valueOf(friend.getAcceptedDate()));
-            ps.setInt(3, friend.getId());
+            ps.setInt(3, friend.getUser1Id());
+            ps.setInt(4, friend.getUser2Id());
+            ps.setInt(5, friend.getUser2Id());
+            ps.setInt(6, friend.getUser1Id());
 
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -77,6 +98,7 @@ public class FriendDAO extends AbstractDAO {
             return false;
         }
     }
+
 
     // Helper method to map a ResultSet to a Friend object
     private Friend mapToFriend(ResultSet rs) throws SQLException {
@@ -93,12 +115,17 @@ public class FriendDAO extends AbstractDAO {
         return friend;
     }
 
-    public boolean deleteFriendship(int id) {
-        String deleteSQL = "DELETE FROM Friends WHERE id=?";
+
+    public boolean deleteFriendship(int user1Id, int user2Id) {
+        String deleteSQL = "DELETE FROM Friends WHERE (user1Id=? AND user2Id=?) OR (user1Id=? AND user2Id=?)";
         try (Connection connection = getConnection();
              PreparedStatement ps = connection.prepareStatement(deleteSQL)) {
 
-            ps.setInt(1, id);
+            ps.setInt(1, user1Id);
+            ps.setInt(2, user2Id);
+            ps.setInt(3, user2Id);
+            ps.setInt(4, user1Id);
+
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -106,15 +133,16 @@ public class FriendDAO extends AbstractDAO {
         }
     }
 
+
+    // will need to check only 1 column
     public List<Friend> getPendingRequestsForUser(int userId) {
-        String selectSQL = "SELECT * FROM Friends WHERE (user1Id=? OR user2Id=?) AND status='PENDING'";
+        String selectSQL = "SELECT * FROM Friends WHERE user1Id=? AND status='PENDING'";
         List<Friend> friendRequests = new ArrayList<>();
 
         try (Connection connection = getConnection();
              PreparedStatement ps = connection.prepareStatement(selectSQL)) {
 
             ps.setInt(1, userId);
-            ps.setInt(2, userId);
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
@@ -128,15 +156,16 @@ public class FriendDAO extends AbstractDAO {
         }
     }
 
+
+    // will need to check only 1 column
     public List<Friend> getAllFriendsForUser(int userId) {
-        String selectSQL = "SELECT * FROM Friends WHERE (user1Id=? OR user2Id=?) AND status='ACCEPTED'";
+        String selectSQL = "SELECT * FROM Friends WHERE user1Id=? AND status='ACCEPTED'";
         List<Friend> friends = new ArrayList<>();
 
         try (Connection connection = getConnection();
              PreparedStatement ps = connection.prepareStatement(selectSQL)) {
 
             ps.setInt(1, userId);
-            ps.setInt(2, userId);
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
@@ -150,12 +179,17 @@ public class FriendDAO extends AbstractDAO {
         }
     }
 
-    public boolean acceptFriendRequest(int id) {
-        String updateSQL = "UPDATE Friends SET status='ACCEPTED' WHERE id=?";
+
+    public boolean acceptFriendRequest(int user1Id, int user2Id) {
+        String updateSQL = "UPDATE Friends SET status='ACCEPTED' WHERE (user1Id=? AND user2Id=?) OR (user1Id=? AND user2Id=?)";
         try (Connection connection = getConnection();
              PreparedStatement ps = connection.prepareStatement(updateSQL)) {
 
-            ps.setInt(1, id);
+            ps.setInt(1, user1Id);
+            ps.setInt(2, user2Id);
+            ps.setInt(3, user2Id);
+            ps.setInt(4, user1Id);
+
             return ps.executeUpdate() > 0;
 
         } catch (SQLException e) {
@@ -164,8 +198,29 @@ public class FriendDAO extends AbstractDAO {
         }
     }
 
-    public boolean declineFriendRequest(int id) {
-        return deleteFriendship(id);  // We already implemented deleteFriendship earlier
+
+    public boolean declineFriendRequest(int user1Id, int user2Id) {
+        return deleteFriendship(user1Id, user2Id);  // We already implemented deleteFriendship earlier
     }
+
+    private boolean doesFriendshipExists(int user1Id, int user2Id) {
+        String selectSQL = "SELECT * FROM Friends WHERE (user1Id=? AND user2Id=?) OR (user1Id=? AND user2Id=?)";
+        try (Connection connection = getConnection();
+             PreparedStatement ps = connection.prepareStatement(selectSQL)) {
+
+            ps.setInt(1, user1Id);
+            ps.setInt(2, user2Id);
+            ps.setInt(3, user2Id);
+            ps.setInt(4, user1Id);
+
+            ResultSet rs = ps.executeQuery();
+            return rs.next();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 
 }

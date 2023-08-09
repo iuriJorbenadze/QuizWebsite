@@ -27,6 +27,7 @@ public class FriendDAOTest {
 
         int createdId = friendDAO.createFriendship(friend);
         assertNotEquals(0, createdId);
+        assertEquals(createdId, friend.getId());
 
         Friend retrievedFriend = friendDAO.getFriendshipById(createdId);
         assertNotNull(retrievedFriend);
@@ -40,7 +41,7 @@ public class FriendDAOTest {
         Friend friend = new Friend(0, 2, 4, Friend.Status.PENDING, LocalDateTime.now(),LocalDateTime.now());
         int createdId = friendDAO.createFriendship(friend);
 
-        assertTrue(friendDAO.acceptFriendRequest(createdId));
+        assertTrue(friendDAO.acceptFriendRequest(friend.getUser1Id(), friend.getUser2Id()));
         Friend updatedFriend = friendDAO.getFriendshipById(createdId);
         assertEquals(Friend.Status.ACCEPTED, updatedFriend.getStatus());
     }
@@ -50,7 +51,7 @@ public class FriendDAOTest {
         Friend friend = new Friend(0, 1, 4, Friend.Status.PENDING, LocalDateTime.now(),LocalDateTime.now());
         int createdId = friendDAO.createFriendship(friend);
 
-        assertTrue(friendDAO.declineFriendRequest(createdId));
+        assertTrue(friendDAO.declineFriendRequest(friend.getUser1Id(), friend.getUser2Id()));
         Friend retrievedFriend = friendDAO.getFriendshipById(createdId);
         assertNull(retrievedFriend);
     }

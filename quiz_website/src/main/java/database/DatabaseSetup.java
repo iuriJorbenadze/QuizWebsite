@@ -159,14 +159,16 @@ public class DatabaseSetup {
                 "user1Id INT NOT NULL," +
                 "user2Id INT NOT NULL," +
                 "status ENUM('PENDING', 'ACCEPTED') NOT NULL DEFAULT 'PENDING'," +
+
                 "createdDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP," +
                 "acceptedDate TIMESTAMP," +   // This will be NULL initially
                 "FOREIGN KEY(user1Id) REFERENCES Users(id)," +
-                "FOREIGN KEY(user2Id) REFERENCES Users(id)," +
-                "UNIQUE(user1Id, user2Id)" +  // Ensure unique combination
+                "FOREIGN KEY(user2Id) REFERENCES Users(id)" +  //was "," at the end
+
                 ")";
         stmt.executeUpdate(createFriendsSQL);
     }
+    //"UNIQUE(user1Id, user2Id)" +  // Ensure unique combination
 
     public static void main(String[] args) {
         DatabaseSetup setup = new DatabaseSetup();
