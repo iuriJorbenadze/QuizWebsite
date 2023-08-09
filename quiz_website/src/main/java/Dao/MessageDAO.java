@@ -41,6 +41,7 @@ public class MessageDAO extends AbstractDAO {
                 try (ResultSet rs = pstmt.getGeneratedKeys()) {
                     if (rs.next()) {
                         id = rs.getLong(1);
+                        message.setMessageId(id);
                     }
                 } catch (SQLException ex) {
                     System.out.println(ex.getMessage());

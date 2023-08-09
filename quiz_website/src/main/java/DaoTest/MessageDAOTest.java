@@ -62,7 +62,6 @@ public class MessageDAOTest {
         messageDAO.createMessage(message2);
 
         List<Message> messages = messageDAO.getAllMessagesForUser(testUser1.getUserId());
-        System.out.println(messages);
         assertTrue(messages.size() >= 1);
     }
 

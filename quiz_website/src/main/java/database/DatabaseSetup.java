@@ -132,6 +132,7 @@ public class DatabaseSetup {
                 "receiverId INT NOT NULL," +
                 "messageText TEXT NOT NULL," +
                 "dateSent TIMESTAMP DEFAULT CURRENT_TIMESTAMP," +
+                "isRead BOOLEAN DEFAULT FALSE," +
                 "FOREIGN KEY(senderId) REFERENCES Users(id)," +
                 "FOREIGN KEY(receiverId) REFERENCES Users(id)" +
                 ")";
