@@ -8,7 +8,7 @@ import java.util.List;
 
 public class UserDAO extends AbstractDAO {
 
-    public User getUserById(Long id) {
+    public User getUserById(int id) {
         User user = null;
         String query = "SELECT * FROM Users WHERE id = ?";
         try (Connection connection = getConnection();
@@ -72,7 +72,7 @@ public class UserDAO extends AbstractDAO {
             if (affectedRows > 0) {
                 try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
                     if (generatedKeys.next()) {
-                        user.setUserId(generatedKeys.getLong(1));
+                        user.setUserId(generatedKeys.getInt(1));
                     }
                 }
             }
@@ -103,7 +103,7 @@ public class UserDAO extends AbstractDAO {
 
 
 
-    public boolean deleteUser(Long id) {
+    public boolean deleteUser(int id) {
         String query = "DELETE FROM Users WHERE id = ?";
         try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
@@ -135,7 +135,7 @@ public class UserDAO extends AbstractDAO {
     //TODO recheck
     private User mapResultSetToUser(ResultSet resultSet) throws SQLException {
         return new User(
-                resultSet.getLong("id"),
+                resultSet.getInt("id"),
                 resultSet.getString("username"),
                 resultSet.getString("passwordHash"),
                 resultSet.getString("email"),

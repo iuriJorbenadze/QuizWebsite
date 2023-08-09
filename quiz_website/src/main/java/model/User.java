@@ -3,7 +3,7 @@ package model;
 import java.time.LocalDateTime;
 
 public class User {
-    private Long userId;
+    private int userId;
     private String username;
     private String passwordHash; // Store the hash, not the actual password.
     private String email;
@@ -22,7 +22,7 @@ public class User {
     }
 
     // Constructor for users being populated from the database (with ID)
-    public User(Long userId, String username, String passwordHash, String email, LocalDateTime dateRegistered, boolean isAdmin) {
+    public User(int userId, String username, String passwordHash, String email, LocalDateTime dateRegistered, boolean isAdmin) {
         this.userId = userId;
         this.username = username;
         this.passwordHash = passwordHash;
@@ -31,13 +31,13 @@ public class User {
         this.isAdmin = isAdmin;
     }
 
-    public Long getUserId() {
+    public int getUserId() {
         return userId;
     }
 
     // Use this method to set the ID after saving a new user to the database
-    public void setUserId(Long userId) {
-        if (this.userId == null) { // Only allow setting if ID is null (new user scenario)
+    public void setUserId(int userId) {
+        if (this.userId == 0) { // Only allow setting if ID is null (new user scenario)
             this.userId = userId;
         } else {
             throw new IllegalStateException("UserID is already set");

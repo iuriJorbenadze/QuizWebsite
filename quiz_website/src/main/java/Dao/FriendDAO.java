@@ -16,6 +16,11 @@ public class FriendDAO extends AbstractDAO {
 
 
     public int createFriendship(Friend friend) {
+        if (doesFriendshipExists(friend.getUser1Id(), friend.getUser2Id())) {
+            System.out.println("Friendship already exists");
+            return -1;  // Indicating that the friendship already exists
+        }
+
         String insertSQL = "INSERT INTO Friends (user1Id, user2Id, status, createdDate, acceptedDate) VALUES (?, ?, ?, ?, ?)";
         try (Connection connection = getConnection();
              PreparedStatement ps = connection.prepareStatement(insertSQL, Statement.RETURN_GENERATED_KEYS)) {
@@ -79,8 +84,35 @@ public class FriendDAO extends AbstractDAO {
         return null;
     }
 
+    private Friend getFriendshipByUserIds(int user1Id, int user2Id) {
+        String selectSQL = "SELECT * FROM Friends WHERE (user1Id=? AND user2Id=?) OR (user1Id=? AND user2Id=?) LIMIT 1";
+        try (Connection connection = getConnection();
+             PreparedStatement ps = connection.prepareStatement(selectSQL)) {
+
+            ps.setInt(1, user1Id);
+            ps.setInt(2, user2Id);
+            ps.setInt(3, user2Id);
+            ps.setInt(4, user1Id);
+
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return mapToFriend(rs);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
 
     public boolean updateFriendshipStatus(Friend friend) {
+        if (getFriendshipByUserIds(friend.getUser1Id(), friend.getUser2Id()) == null) {
+            System.out.println("Friendship does not exist, it is null");
+            return false;  // Indicate that the friendship doesn't exist
+        }
+
         String updateSQL = "UPDATE Friends SET status=?, acceptedDate=? WHERE (user1Id=? AND user2Id=?) OR (user1Id=? AND user2Id=?)";
         try (Connection connection = getConnection();
              PreparedStatement ps = connection.prepareStatement(updateSQL)) {
@@ -117,6 +149,13 @@ public class FriendDAO extends AbstractDAO {
 
 
     public boolean deleteFriendship(int user1Id, int user2Id) {
+        Friend existingFriendship = getFriendshipByUserIds(user1Id, user2Id);
+        if (existingFriendship == null){
+            System.out.println("There is no friendship, so can't delete");
+            return false;
+        }
+
+
         String deleteSQL = "DELETE FROM Friends WHERE (user1Id=? AND user2Id=?) OR (user1Id=? AND user2Id=?)";
         try (Connection connection = getConnection();
              PreparedStatement ps = connection.prepareStatement(deleteSQL)) {
@@ -181,6 +220,17 @@ public class FriendDAO extends AbstractDAO {
 
 
     public boolean acceptFriendRequest(int user1Id, int user2Id) {
+
+        Friend existingFriendship = getFriendshipByUserIds(user1Id, user2Id);
+        if (existingFriendship == null){
+            System.out.println("There is no friendship, so can't decline null");
+            return false;
+        }
+        if (existingFriendship.getStatus() != Friend.Status.PENDING) {
+            System.out.println("There is no pending status, so can't accept");
+            return false;  // Indicate that there's no pending request to accept
+        }
+
         String updateSQL = "UPDATE Friends SET status='ACCEPTED' WHERE (user1Id=? AND user2Id=?) OR (user1Id=? AND user2Id=?)";
         try (Connection connection = getConnection();
              PreparedStatement ps = connection.prepareStatement(updateSQL)) {
@@ -200,6 +250,16 @@ public class FriendDAO extends AbstractDAO {
 
 
     public boolean declineFriendRequest(int user1Id, int user2Id) {
+        Friend existingFriendship = getFriendshipByUserIds(user1Id, user2Id);
+        if (existingFriendship == null){
+            System.out.println("There is no friendship, so can't decline null");
+            return false;
+        }
+        if (existingFriendship.getStatus() != Friend.Status.PENDING) {
+            System.out.println("There is no pending status, so can't decline");
+            return false;  // Indicate that there's no pending request to decline
+        }
+
         return deleteFriendship(user1Id, user2Id);  // We already implemented deleteFriendship earlier
     }
 
@@ -219,6 +279,16 @@ public class FriendDAO extends AbstractDAO {
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
+        }
+    }
+
+    public void clearFriendsTable() {
+        String deleteAllSQL = "DELETE FROM Friends";
+        try (Connection connection = getConnection();
+             PreparedStatement ps = connection.prepareStatement(deleteAllSQL)) {
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 

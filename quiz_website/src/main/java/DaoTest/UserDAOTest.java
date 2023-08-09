@@ -65,7 +65,8 @@ class UserDAOTest {
     }
 
     private User createRandomTestUser() {
+        //id is int and instead of null we provide 0
         String randomSuffix = String.valueOf(random.nextInt(10000));
-        return new User(null, "testUsername" + randomSuffix, "testPasswordHash", "test" + randomSuffix + "@email.com", LocalDateTime.now(), false);
+        return new User(0, "testUsername" + randomSuffix, "testPasswordHash", "test" + randomSuffix + "@email.com", LocalDateTime.now(), false);
     }
 }
