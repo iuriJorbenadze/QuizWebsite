@@ -149,7 +149,8 @@ public class DatabaseSetup {
                 "userId INT NOT NULL," +
                 "achievementName VARCHAR(255) NOT NULL," +
                 "dateEarned TIMESTAMP DEFAULT CURRENT_TIMESTAMP," +
-                "FOREIGN KEY(userId) REFERENCES Users(id)" +
+                "FOREIGN KEY(userId) REFERENCES Users(id) ON DELETE CASCADE," + // Added ON DELETE CASCADE for foreign key
+                "CHECK (achievementName IN ('AMATEUR_AUTHOR', 'PROLIFIC_AUTHOR', 'PRODIGIOUS_AUTHOR', 'QUIZ_MACHINE', 'I_AM_THE_GREATEST', 'PRACTICE_MAKES_PERFECT'))" +
                 ")";
         stmt.executeUpdate(createAchievementsSQL);
     }
