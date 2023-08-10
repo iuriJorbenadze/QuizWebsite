@@ -14,13 +14,23 @@ import java.util.List;
 public class AchievementDAO extends AbstractDAO {
 
     public int createAchievement(Achievement achievement) {
+        // Check if the user already has the achievement
+        List<Achievement> existingAchievements = getAchievementsByUserId(achievement.getUserId());
+        for (Achievement existing : existingAchievements) {
+            if (existing.getAchievementType().name().equals(achievement.getAchievementType().name())) {
+                return -2; // Return specific value to indicate achievement already exists
+            }
+        }
+
         String query = "INSERT INTO Achievements(userId, achievementName, dateEarned) VALUES (?, ?, ?)";
+
 
         try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
 
             statement.setInt(1, achievement.getUserId());
-            statement.setString(2, achievement.getAchievementName());
+            // Using the name() method to get the enum constant's name
+            statement.setString(2, achievement.getAchievementType().name());
             statement.setDate(3, new java.sql.Date(achievement.getDateEarned().getTime()));
 
             int affectedRows = statement.executeUpdate();
@@ -55,10 +65,11 @@ public class AchievementDAO extends AbstractDAO {
 
             while (resultSet.next()) {
                 int id = resultSet.getInt("id");
+                // Directly getting the AchievementType from the resultSet
                 Achievement.AchievementType type = Achievement.AchievementType.valueOf(resultSet.getString("achievementName"));
                 Date dateEarned = resultSet.getDate("dateEarned");
 
-                achievements.add(new Achievement(id, userId, type.getName(), dateEarned));
+                achievements.add(new Achievement(id, userId, type, dateEarned));  // Changed from type.getName() to type
             }
         } catch (SQLException e) {
             e.printStackTrace();

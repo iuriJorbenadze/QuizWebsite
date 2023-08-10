@@ -5,44 +5,49 @@ import java.util.Date;
 
 public class Achievement {
     public enum AchievementType {
-        AMATEUR_AUTHOR("AMATEUR_AUTHOR", "The user created a quiz."),
-        PROLIFIC_AUTHOR("PROLIFIC_AUTHOR", "The user created five quizzes."),
-        PRODIGIOUS_AUTHOR("PRODIGIOUS_AUTHOR", "The user created ten quizzes."),
-        QUIZ_MACHINE("QUIZ_MACHINE", "The user took ten quizzes."),
-        I_AM_THE_GREATEST("I_AM_THE_GREATEST", "The user had the highest score on a quiz."),
-        PRACTICE_MAKES_PERFECT("PRACTICE_MAKES_PERFECT", "The user took a quiz in practice mode.");
+        AMATEUR_AUTHOR("Amateur Author", "The user created a quiz.", "icon_amateur.png"),
+        PROLIFIC_AUTHOR("Prolific Author", "The user created five quizzes.", "icon_prolific.png"),
+        PRODIGIOUS_AUTHOR("Prodigious Author", "The user created ten quizzes.", "icon_prodigious.png"),
+        QUIZ_MACHINE("Quiz Machine", "The user took ten quizzes.", "icon_machine.png"),
+        I_AM_THE_GREATEST("I am the Greatest", "The user had the highest score on a quiz.", "icon_greatest.png"),
+        PRACTICE_MAKES_PERFECT("Practice Makes Perfect", "The user took a quiz in practice mode.", "icon_practice.png");
 
-        // You could also add an icon filename or URL field here.
-        private final String name;
+        private final String displayName;
         private final String description;
+        private final String iconFilename;
 
-        AchievementType(String name, String description) {
-            this.name = name;
+        AchievementType(String displayName, String description, String iconFilename) {
+            this.displayName = displayName;
             this.description = description;
+            this.iconFilename = iconFilename;
         }
 
-        public String getName() {
-            return name;
+        public String getDisplayName() {
+            return displayName;
         }
 
         public String getDescription() {
             return description;
         }
+
+        public String getIconFilename() {
+            return iconFilename;
+        }
     }
 
     private int id;
     private int userId;
-    private String achievementName;
+    private AchievementType achievementType;
     private Date dateEarned;
 
-    public Achievement() {
 
+    public Achievement() {
     }
 
-    public Achievement(int id, int userId, String achievementName, Date dateEarned) {
+    public Achievement(int id, int userId, AchievementType achievementType, Date dateEarned) {
         this.id = id;
         this.userId = userId;
-        this.achievementName = achievementName;
+        this.achievementType = achievementType;
         this.dateEarned = dateEarned;
     }
 
@@ -62,12 +67,12 @@ public class Achievement {
         this.userId = userId;
     }
 
-    public String getAchievementName() {
-        return achievementName;
+    public AchievementType getAchievementType() {
+        return achievementType;
     }
 
-    public void setAchievementName(String achievementName) {
-        this.achievementName = achievementName;
+    public void setAchievementType(AchievementType achievementType) {
+        this.achievementType = achievementType;
     }
 
     public Date getDateEarned() {
@@ -83,7 +88,7 @@ public class Achievement {
         return "Achievement{" +
                 "id=" + id +
                 ", userId=" + userId +
-                ", achievementName='" + achievementName + '\'' +
+                ", achievementType=" + achievementType +
                 ", dateEarned=" + dateEarned +
                 '}';
     }

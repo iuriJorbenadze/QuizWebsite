@@ -149,11 +149,15 @@ public class DatabaseSetup {
                 "userId INT NOT NULL," +
                 "achievementName VARCHAR(255) NOT NULL," +
                 "dateEarned TIMESTAMP DEFAULT CURRENT_TIMESTAMP," +
-                "FOREIGN KEY(userId) REFERENCES Users(id) ON DELETE CASCADE," + // Added ON DELETE CASCADE for foreign key
+                "FOREIGN KEY(userId) REFERENCES Users(id) ON DELETE CASCADE," +
+                "UNIQUE(userId, achievementName)," + // Unique constraint
                 "CHECK (achievementName IN ('AMATEUR_AUTHOR', 'PROLIFIC_AUTHOR', 'PRODIGIOUS_AUTHOR', 'QUIZ_MACHINE', 'I_AM_THE_GREATEST', 'PRACTICE_MAKES_PERFECT'))" +
                 ")";
         stmt.executeUpdate(createAchievementsSQL);
     }
+
+
+
 
     private void createFriendsTable(Statement stmt) throws SQLException {
         String createFriendsSQL = "CREATE TABLE IF NOT EXISTS Friends(" +
