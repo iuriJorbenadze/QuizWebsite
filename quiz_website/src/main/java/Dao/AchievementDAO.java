@@ -78,5 +78,65 @@ public class AchievementDAO extends AbstractDAO {
         return achievements;
     }
 
-    // ... Any other relevant methods for Achievement DAO, like update, delete, etc.
+    // 1. Retrieve a specific achievement by its ID.
+    public Achievement getAchievementById(int achievementId) {
+        String query = "SELECT * FROM Achievements WHERE id = ?";
+
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+
+            statement.setInt(1, achievementId);
+            ResultSet resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                int userId = resultSet.getInt("userId");
+                Achievement.AchievementType type = Achievement.AchievementType.valueOf(resultSet.getString("achievementName"));
+                Date dateEarned = resultSet.getDate("dateEarned");
+
+                return new Achievement(id, userId, type, dateEarned);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null; // Return null if no record is found or there's an exception.
+    }
+
+    // 2. Update a specific achievement.
+    public boolean updateAchievement(Achievement achievement) {
+        String query = "UPDATE Achievements SET userId = ?, achievementName = ?, dateEarned = ? WHERE id = ?";
+
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+
+            statement.setInt(1, achievement.getUserId());
+            statement.setString(2, achievement.getAchievementType().name());
+            statement.setDate(3, new java.sql.Date(achievement.getDateEarned().getTime()));
+            statement.setInt(4, achievement.getId());
+
+            int affectedRows = statement.executeUpdate();
+            return affectedRows > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false; // Return false on failure.
+        }
+    }
+
+    // 3. Delete an achievement by its ID.
+    public boolean deleteAchievementById(int achievementId) {
+        String query = "DELETE FROM Achievements WHERE id = ?";
+
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+
+            statement.setInt(1, achievementId);
+            int affectedRows = statement.executeUpdate();
+            return affectedRows > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false; // Return false on failure.
+        }
+    }
 }
