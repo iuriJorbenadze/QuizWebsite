@@ -15,6 +15,8 @@ public class QuestionService {
         this.questionDAO = questionDAO;
     }
 
+
+
     public Question getQuestionById(Long id) {
         validateId(id);
         return questionDAO.getQuestionById(id);
@@ -70,6 +72,80 @@ public class QuestionService {
         );
     }
 
+    public List<String> fetchOptionsForQuestion(Long questionId) {
+        validateId(questionId);
+        return questionDAO.getOptionsForQuestion(questionId);
+    }
+
+    public boolean modifyOptionsForQuestion(Long questionId, List<String> newOptions) {
+        validateId(questionId);
+        if (newOptions == null || newOptions.isEmpty()) {
+            throw new IllegalArgumentException("Options list cannot be empty.");
+        }
+        return questionDAO.updateOptionsForQuestion(questionId, newOptions);
+    }
+
+    // Ensures the options for the question are created in the DB
+    public boolean addOptionsToQuestion(Long questionId, List<String> options) {
+        validateId(questionId);
+        return questionDAO.createOptionsForQuestion(questionId, options);
+    }
+
+    // Deletes all options for a specific question
+    public boolean removeAllOptionsFromQuestion(Long questionId) {
+        validateId(questionId);
+        return questionDAO.deleteOptionsForQuestion(questionId);
+    }
+
+    // Helpful method to get a question with its associated options
+    public Question getCompleteQuestionById(Long id) {
+        Question question = getQuestionById(id);
+        List<String> options = fetchOptionsForQuestion(id);
+        question.setOptions(options); // Assuming a setter for options in Question class
+        return question;
+    }
+
+    // Method to validate and update a question with its options
+    public boolean updateCompleteQuestion(Question question) {
+        validateQuestion(question);
+        if (updateQuestion(question)) {
+            return modifyOptionsForQuestion(question.getQuestionId(), question.getOptions());
+        }
+        return false;
+    }
+
+
+
+
+    // Batch creation of questions for a specific quiz
+    public boolean createQuestions(List<Question> questions) {
+        if (questions == null || questions.isEmpty()) {
+            throw new IllegalArgumentException("Questions list cannot be empty.");
+        }
+        for (Question question : questions) {
+            validateQuestion(question);
+            if (!createQuestion(question)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    // Batch retrieval based on a list of IDs
+    public List<Question> getQuestionsByIds(List<Long> ids) {
+        List<Question> questions = new ArrayList<>();
+        for (Long id : ids) {
+            questions.add(getQuestionById(id));
+        }
+        return questions;
+    }
+
+    // Check if an answer is correct without awarding points
+    public boolean isAnswerCorrect(Question question, String userAnswer) {
+        return question.getCorrectAnswer().equals(userAnswer);
+    }
+
+
     private void validateQuestion(Question question) {
         if (question == null) {
             throw new IllegalArgumentException("Question cannot be null.");
@@ -89,5 +165,29 @@ public class QuestionService {
         if (!question.getOptions().contains(question.getCorrectAnswer())) {
             throw new IllegalArgumentException("Correct answer must be one of the provided options.");
         }
+
+        for (String option : question.getOptions()) {
+            if (option.trim().isEmpty()) {
+                throw new IllegalArgumentException("Option content cannot be empty.");
+            }
+        }
+
+    }
+
+    // Handle database or other exceptions
+    private <T> T handleException(TryReturnSupplier<T> supplier) {
+        try {
+            return supplier.get();
+        } catch (Exception ex) {
+            // Log the exception
+            // Here you can use any logging library like SLF4J, Log4J etc.
+            System.err.println("An error occurred: " + ex.getMessage());  // For the sake of simplicity, using System.err
+            throw new RuntimeException("Operation failed. Please try again.");
+        }
+    }
+
+    @FunctionalInterface
+    private interface TryReturnSupplier<T> {
+        T get() throws Exception;
     }
 }
