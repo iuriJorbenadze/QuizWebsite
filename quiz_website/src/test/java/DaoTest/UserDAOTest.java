@@ -1,4 +1,4 @@
-package DaoTest;
+//package DaoTest;
 
 import model.User;
 import Dao.UserDAO;
@@ -11,7 +11,8 @@ import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class UserDAOTest {
+
+public class UserDAOTest {
 
     private UserDAO userDAO;
     private Random random;
