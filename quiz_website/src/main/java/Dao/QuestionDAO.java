@@ -61,6 +61,14 @@ public class QuestionDAO extends AbstractDAO {
         if (question.getOptions() == null || question.getOptions().isEmpty()) {
             return false;  // Reject questions with no options
         }
+        if (question.getContent() == "" || question.getContent().isEmpty()) {
+            return false;  // Reject questions with no content
+        }
+
+        if (!question.getOptions().contains(question.getCorrectAnswer())) {
+            return false; // or throw a new CustomException("Correct answer doesn't match options");
+        }
+
 
         String insertQuestionQuery = "INSERT INTO Questions(quizId, content) VALUES (?, ?)";
         try (Connection connection = getConnection();
@@ -213,6 +221,42 @@ public class QuestionDAO extends AbstractDAO {
             }
         }
     }
+    public boolean clearOptionsTable() {
+        String sql = "DELETE FROM options";
+
+        try (Connection conn = getConnection();
+             Statement stmt = conn.createStatement()) {
+
+            stmt.executeUpdate(sql);
+            return true;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean clearQuestionsTable() {
+        // First, clear the contents of the Options table
+        if (!clearOptionsTable()) {
+            return false;
+        }
+
+        String sql = "DELETE FROM questions";
+
+        try (Connection conn = getConnection();
+             Statement stmt = conn.createStatement()) {
+
+            stmt.executeUpdate(sql);
+            return true;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+
 
 
     public boolean deleteQuestion(Long questionId) {

@@ -2,9 +2,11 @@ package DaoTest;
 
 import Dao.QuestionDAO;
 import model.Question;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -18,6 +20,10 @@ public class QuestionDAOTest {
     public void setup() {
         questionDAO = new QuestionDAO();
         // TODO: You might want to set up a test database connection here or ensure your database is in a known state
+    }
+    @AfterEach
+    public void tearDown() {
+        questionDAO.clearQuestionsTable();
     }
 
 
@@ -131,5 +137,52 @@ public class QuestionDAOTest {
         Question question = new Question(null, 1L, "Is this question valid?", null, "Yes");
         assertFalse(questionDAO.createQuestion(question));
     }
+
+    @Test
+    public void testCreateQuestionWithEmptyOptions() {
+        Question question = new Question(null, 1L, "Is this question valid?", new ArrayList<>(), "Yes");
+        assertFalse(questionDAO.createQuestion(question));
+    }
+    @Test
+    public void testCreateQuestionWithMismatchedAnswer() {
+        Question question = new Question(null, 1L, "Is this correct?", Arrays.asList("Option1", "Option2"), "MismatchedAnswer");
+        assertFalse(questionDAO.createQuestion(question));
+    }
+    @Test
+    public void testUpdateQuestionQuizId() {
+        Question question = new Question(null, 1L, "What's the capital of France?", Arrays.asList("Berlin", "Paris", "London"), "Paris");
+        assertTrue(questionDAO.createQuestion(question));
+
+        question.setQuizId(2L);
+        assertTrue(questionDAO.updateQuestion(question));
+
+        Question updatedQuestion = questionDAO.getQuestionById(question.getQuestionId());
+        assertEquals(2L, updatedQuestion.getQuizId());
+    }
+    @Test
+    public void testCreateQuestionWithEmptyContent() {
+        Question question = new Question(null, 1L, "", Arrays.asList("Option1", "Option2"), "Option1");
+        assertFalse(questionDAO.createQuestion(question), "Questions with empty content shouldn't be created.");
+    }
+
+    @Test
+    public void testQuestionOrderingMultiple() {
+        Question question1 = new Question(null, 1L, "Q1?", Arrays.asList("A", "B", "C"), "A");
+        Question question2 = new Question(null, 1L, "Q2?", Arrays.asList("D", "E", "F"), "D");
+        Question question3 = new Question(null, 1L, "Q3?", Arrays.asList("G", "H", "I"), "G");
+
+        assertTrue(questionDAO.createQuestion(question1));
+        assertTrue(questionDAO.createQuestion(question2));
+        assertTrue(questionDAO.createQuestion(question3));
+
+        List<Question> questions = questionDAO.getQuestionsByQuizId(1L);
+        assertEquals(3, questions.size());
+
+        // Assuming questions are ordered by their creation order
+        assertEquals(question1.getContent(), questions.get(0).getContent());
+        assertEquals(question2.getContent(), questions.get(1).getContent());
+        assertEquals(question3.getContent(), questions.get(2).getContent());
+    }
+
 
 }

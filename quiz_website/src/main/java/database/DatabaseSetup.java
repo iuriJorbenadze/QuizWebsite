@@ -104,10 +104,11 @@ public class DatabaseSetup {
                 "id INT AUTO_INCREMENT PRIMARY KEY," +
                 "questionId INT NOT NULL," +
                 "optionText TEXT NOT NULL," +
-                "FOREIGN KEY(questionId) REFERENCES Questions(id)" +
+                "FOREIGN KEY(questionId) REFERENCES Questions(id) ON DELETE CASCADE" +
                 ")";
         stmt.executeUpdate(createOptionsSQL);
     }
+
 
     private void createTakenQuizTable(Statement stmt) throws SQLException {
         String createTakenQuizSQL = "CREATE TABLE IF NOT EXISTS TakenQuiz(" +
