@@ -141,7 +141,6 @@ public class UserDAO extends AbstractDAO {
                 resultSet.getString("email"),
                 resultSet.getTimestamp("dateRegistered").toLocalDateTime(),
                 resultSet.getBoolean("isAdmin")
-                // Continue with other fields if there are any
         );
     }
 
