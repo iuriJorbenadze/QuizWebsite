@@ -2,11 +2,7 @@ package Dao;
 
 import model.Friend;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,6 +11,7 @@ import java.util.List;
 public class FriendDAO extends AbstractDAO {
 
 
+    //returns first id of created friendship connections (2 are created firsts id is returned)
     public int createFriendship(Friend friend) {
         if (doesFriendshipExists(friend.getUser1Id(), friend.getUser2Id())) {
             System.out.println("Friendship already exists");
@@ -30,7 +27,18 @@ public class FriendDAO extends AbstractDAO {
             ps.setInt(2, friend.getUser2Id());
             ps.setString(3, friend.getStatus().toString());
             ps.setTimestamp(4, java.sql.Timestamp.valueOf(friend.getCreatedDate()));
-            ps.setTimestamp(5, java.sql.Timestamp.valueOf(friend.getAcceptedDate()));
+
+            //IMPORTANT
+            if (friend.getStatus() == Friend.Status.PENDING){
+                //null should be saved to db (unless overriden)
+                ps.setTimestamp(5, null);
+            }else {
+                ps.setTimestamp(5, java.sql.Timestamp.valueOf(LocalDateTime.now()));
+            }
+
+
+
+
             int affectedRows = ps.executeUpdate();
 
 
@@ -66,6 +74,11 @@ public class FriendDAO extends AbstractDAO {
     }
 
 
+    public int  sendFriendRequest(int user1Id, int user2Id) {
+        Friend friendRequest = new Friend(0, user1Id, user2Id, Friend.Status.PENDING);
+        return createFriendship(friendRequest);
+    }
+
 
     public Friend getFriendshipById(int id) {
         String selectSQL = "SELECT * FROM Friends WHERE id=?";
@@ -84,7 +97,7 @@ public class FriendDAO extends AbstractDAO {
         return null;
     }
 
-    private Friend getFriendshipByUserIds(int user1Id, int user2Id) {
+    public Friend getFriendshipByUserIds(int user1Id, int user2Id) {
         String selectSQL = "SELECT * FROM Friends WHERE (user1Id=? AND user2Id=?) OR (user1Id=? AND user2Id=?) LIMIT 1";
         try (Connection connection = getConnection();
              PreparedStatement ps = connection.prepareStatement(selectSQL)) {
@@ -118,7 +131,14 @@ public class FriendDAO extends AbstractDAO {
              PreparedStatement ps = connection.prepareStatement(updateSQL)) {
 
             ps.setString(1, friend.getStatus().toString());
-            ps.setTimestamp(2, java.sql.Timestamp.valueOf(friend.getAcceptedDate()));
+
+            //ps.setTimestamp(2, java.sql.Timestamp.valueOf(friend.getAcceptedDate()));
+            if (friend.getStatus() == Friend.Status.ACCEPTED) {
+                ps.setTimestamp(2, java.sql.Timestamp.valueOf(LocalDateTime.now()));
+            } else {
+                ps.setTimestamp(2, null);
+            }
+
             ps.setInt(3, friend.getUser1Id());
             ps.setInt(4, friend.getUser2Id());
             ps.setInt(5, friend.getUser2Id());
@@ -139,7 +159,11 @@ public class FriendDAO extends AbstractDAO {
         int user2Id = rs.getInt("user2Id");
         Friend.Status status = Friend.Status.valueOf(rs.getString("status"));
         LocalDateTime createdDate = rs.getTimestamp("createdDate").toLocalDateTime();
-        LocalDateTime acceptedDate = rs.getTimestamp("acceptedDate").toLocalDateTime();
+
+        //IMPORTANT
+        Timestamp timestamp = rs.getTimestamp("acceptedDate");
+        LocalDateTime acceptedDate = (timestamp != null) ? timestamp.toLocalDateTime() : null;
+
 
         Friend friend = new Friend(id, user1Id, user2Id, status);
         friend.setCreatedDate(createdDate);
@@ -173,7 +197,25 @@ public class FriendDAO extends AbstractDAO {
     }
 
 
+    public boolean clearFriendshipsForUser(int userId) {
+        String deleteSQL = "DELETE FROM Friends WHERE user1Id=? OR user2Id=?";
+
+        try (Connection connection = getConnection();
+             PreparedStatement ps = connection.prepareStatement(deleteSQL)) {
+
+            ps.setInt(1, userId);
+            ps.setInt(2, userId);
+
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+
     // will need to check only 1 column
+    //TODO once user logs in this will be executed and we will notify user that someone want to add hom as friend
     public List<Friend> getPendingRequestsForUser(int userId) {
         String selectSQL = "SELECT * FROM Friends WHERE user1Id=? AND status='PENDING'";
         List<Friend> friendRequests = new ArrayList<>();
@@ -292,5 +334,29 @@ public class FriendDAO extends AbstractDAO {
         }
     }
 
+    public List<Integer> getSuggestedFriendIds(int userId) {
+        // This is a basic suggestion based on mutual friends.
+        // You can enhance it by using more sophisticated algorithms.
+        String selectSQL = "SELECT DISTINCT f2.user2Id FROM Friends f1 JOIN Friends f2 ON f1.user2Id = f2.user1Id WHERE f1.user1Id = ? AND f2.user2Id <> ?";
+        List<Integer> suggestedIds = new ArrayList<>();
+
+        try (Connection connection = getConnection();
+             PreparedStatement ps = connection.prepareStatement(selectSQL)) {
+
+            ps.setInt(1, userId);
+            ps.setInt(2, userId);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                suggestedIds.add(rs.getInt("user2Id"));
+            }
+
+            return suggestedIds;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return Collections.emptyList();
+        }
+    }
 
 }
