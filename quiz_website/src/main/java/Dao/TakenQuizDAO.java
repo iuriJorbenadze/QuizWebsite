@@ -10,7 +10,9 @@ import java.sql.Statement;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class TakenQuizDAO extends AbstractDAO{
     public Long createTakenQuiz(TakenQuiz takenQuiz) {
@@ -214,6 +216,76 @@ public class TakenQuizDAO extends AbstractDAO{
     }
 
 
+    public List<TakenQuiz> getRecentQuizTakers(int limit) {
+        List<TakenQuiz> recentTakers = new ArrayList<>();
+        String selectSQL = "SELECT * FROM TakenQuiz ORDER BY dateTaken DESC LIMIT ?";
+
+        try (PreparedStatement pstmt = getConnection().prepareStatement(selectSQL)) {
+            pstmt.setInt(1, limit);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                TakenQuiz takenQuiz = new TakenQuiz();
+                takenQuiz.setTakenQuizId(rs.getLong("id"));
+                takenQuiz.setUserId(rs.getLong("userId"));
+                takenQuiz.setQuizId(rs.getLong("quizId"));
+                takenQuiz.setScore(rs.getInt("score"));
+                takenQuiz.setAttemptDate(rs.getTimestamp("dateTaken").toLocalDateTime());
+                takenQuiz.setTimeTaken(Duration.ofSeconds(rs.getLong("timeTaken")));
+                takenQuiz.setFeedback(rs.getString("feedback"));
+                takenQuiz.setStatus(rs.getString("status"));
+
+                recentTakers.add(takenQuiz);
+            }
+        } catch (SQLException e) {
+            // Handle exception
+        }
+        return recentTakers;
+    }
+    public List<TakenQuiz> getAllTakenQuizzes() {
+        List<TakenQuiz> allTakenQuizzes = new ArrayList<>();
+        String selectSQL = "SELECT * FROM TakenQuiz";
+
+        try (PreparedStatement pstmt = getConnection().prepareStatement(selectSQL)) {
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                TakenQuiz takenQuiz = new TakenQuiz();
+                takenQuiz.setTakenQuizId(rs.getLong("id"));
+                takenQuiz.setUserId(rs.getLong("userId"));
+                takenQuiz.setQuizId(rs.getLong("quizId"));
+                takenQuiz.setScore(rs.getInt("score"));
+                takenQuiz.setAttemptDate(rs.getTimestamp("dateTaken").toLocalDateTime());
+                takenQuiz.setTimeTaken(Duration.ofSeconds(rs.getLong("timeTaken")));
+                takenQuiz.setFeedback(rs.getString("feedback"));
+                takenQuiz.setStatus(rs.getString("status"));
+
+                allTakenQuizzes.add(takenQuiz);
+            }
+        } catch (SQLException e) {
+            // Handle exception
+        }
+        return allTakenQuizzes;
+    }
+    public Map<Long, Long> getMostAttemptedQuizzes(int limit) {
+        Map<Long, Long> quizFrequency = new HashMap<>();
+
+        // SQL query to count the number of times each quiz was taken and order them by that count
+        String selectSQL = "SELECT quizId, COUNT(*) as attempts FROM TakenQuiz GROUP BY quizId ORDER BY attempts DESC LIMIT ?";
+
+        try (PreparedStatement pstmt = getConnection().prepareStatement(selectSQL)) {
+            pstmt.setInt(1, limit);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                quizFrequency.put(rs.getLong("quizId"), rs.getLong("attempts"));
+            }
+        } catch (SQLException e) {
+            // Handle exception
+        }
+
+        return quizFrequency;
+    }
 
 
 }

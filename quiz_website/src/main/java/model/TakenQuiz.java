@@ -17,13 +17,13 @@ public class TakenQuiz {
     public TakenQuiz() {
     }
 
-    public TakenQuiz( Long userId, Long quizId, int score,
-                     LocalDateTime attemptDate) {
-        this.userId = userId;
-        this.quizId = quizId;
-        this.score = score;
-        this.attemptDate = attemptDate;
-    }
+//    public TakenQuiz( Long userId, Long quizId, int score,
+//                     LocalDateTime attemptDate) {
+//        this.userId = userId;
+//        this.quizId = quizId;
+//        this.score = score;
+//        this.attemptDate = attemptDate;
+//    }
 
     // Constructor
     public TakenQuiz(Long takenQuizId, Long userId, Long quizId, int score,
