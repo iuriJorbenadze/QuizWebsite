@@ -149,6 +149,26 @@ public class FriendDAOTest {
 
 
         friendDAO.sendFriendRequest(tempUser1.getUserId(), tempUser2.getUserId());
+        //for testing purposes in db we can see that create and accept times are different
+        int j2 =0;
+        for (int i = 0; i < 1900000000; i++) {
+
+            for (int k = 0; k < 1200000000; k++) {
+                j2++;
+
+            }
+        }
+        System.out.println(j2);
+        int j11 =0;
+        for (int i = 0; i < 1200000000; i++) {
+
+            for (int k = 0; k < 1200000000; k++) {
+                j11++;
+
+            }
+        }
+        System.out.println(j11);
+
         friendDAO.acceptFriendRequest(tempUser1.getUserId(), tempUser2.getUserId());
 
         friendDAO.sendFriendRequest(tempUser2.getUserId(), tempUser3.getUserId());

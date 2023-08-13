@@ -273,14 +273,15 @@ public class FriendDAO extends AbstractDAO {
             return false;  // Indicate that there's no pending request to accept
         }
 
-        String updateSQL = "UPDATE Friends SET status='ACCEPTED' WHERE (user1Id=? AND user2Id=?) OR (user1Id=? AND user2Id=?)";
+        String updateSQL = "UPDATE Friends SET status='ACCEPTED', acceptedDate=? WHERE (user1Id=? AND user2Id=?) OR (user1Id=? AND user2Id=?)";
         try (Connection connection = getConnection();
              PreparedStatement ps = connection.prepareStatement(updateSQL)) {
 
-            ps.setInt(1, user1Id);
-            ps.setInt(2, user2Id);
+            ps.setTimestamp(1, java.sql.Timestamp.valueOf(LocalDateTime.now()));
+            ps.setInt(2, user1Id);
             ps.setInt(3, user2Id);
-            ps.setInt(4, user1Id);
+            ps.setInt(4, user2Id);
+            ps.setInt(5, user1Id);
 
             return ps.executeUpdate() > 0;
 
