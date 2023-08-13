@@ -114,6 +114,16 @@ public class UserDAO extends AbstractDAO {
         }
         return false;
     }
+    public void deleteAllUsersAndCascade() throws SQLException {
+        String sql = "DELETE FROM user"; // Assuming the table name is 'user'
+        Connection connection = getConnection();
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.executeUpdate();
+        } catch (Exception e) {
+            // Handle exception, maybe throw it or log it
+            e.printStackTrace();
+        }
+    }
 
     public List<User> getAllAdmins() {
         List<User> admins = new ArrayList<>();
