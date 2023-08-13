@@ -100,6 +100,23 @@ public class QuizDAO extends AbstractDAO {
         return false;
     }
 
+    public List<Quiz> getQuizzesByUser(Long userId) {
+        List<Quiz> quizzes = new ArrayList<>();
+        String query = "SELECT * FROM Quizzes WHERE createdByUserId = ?";
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setLong(1, userId);
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                quizzes.add(mapResultSetToQuiz(resultSet));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return quizzes;
+    }
+
+
     private Quiz mapResultSetToQuiz(ResultSet resultSet) throws SQLException {
         Quiz quiz = new Quiz(
         resultSet.getLong("id"),

@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -58,4 +59,32 @@ public class QuizDAOTest {
         assertTrue(quizDAO.deleteQuiz(newQuiz.getQuizId()));
         assertNull(quizDAO.getQuizById(newQuiz.getQuizId())); // After deletion, the quiz should not be found
     }
+
+    @Test
+    void testGetQuizzesByUser() {
+
+        List<Quiz> quizzesByUserTemp = quizDAO.getQuizzesByUser(1L);
+        int sizeBefore = quizzesByUserTemp.size();
+        // Given
+        Quiz quiz1 = new Quiz("Quiz User 1", "Description User 1", 1L, LocalDateTime.now());
+        Quiz quiz2 = new Quiz("Quiz User 2", "Description User 2", 1L, LocalDateTime.now());
+        Quiz quiz3 = new Quiz("Quiz User 3", "Description User 3", 1L, LocalDateTime.now());
+
+        // Creating the quizzes
+        quizDAO.createQuiz(quiz1);
+        quizDAO.createQuiz(quiz2);
+        quizDAO.createQuiz(quiz3);
+
+        // When
+        List<Quiz> quizzesByUser = quizDAO.getQuizzesByUser(1L);  // Assuming user with ID 1L is the one used in tests
+
+        // Then
+        assertNotNull(quizzesByUser);
+        assertEquals(sizeBefore + 3, quizzesByUser.size());
+
+        assertTrue(quizzesByUser.stream().anyMatch(quiz -> quiz.getTitle().equals("Quiz User 1")));
+        assertTrue(quizzesByUser.stream().anyMatch(quiz -> quiz.getTitle().equals("Quiz User 2")));
+        assertTrue(quizzesByUser.stream().anyMatch(quiz -> quiz.getTitle().equals("Quiz User 3")));
+    }
+
 }
