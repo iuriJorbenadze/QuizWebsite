@@ -15,25 +15,28 @@ public class Friend {
     private LocalDateTime createdDate;
     private LocalDateTime acceptedDate;
 
-    public Friend() {
-
-    }
-
-    public Friend(int id, int user1Id, int user2Id, Status status, LocalDateTime createdDate, LocalDateTime acceptedDate) {
-        this.id = id;
-        this.user1Id = user1Id;
-        this.user2Id = user2Id;
-        this.status = status;
-        this.createdDate = createdDate;
-        this.acceptedDate = acceptedDate;
-    }
-
     public Friend(int id, int user1Id, int user2Id, Status status) {
         this.id = id;
         this.user1Id = user1Id;
         this.user2Id = user2Id;
         this.status = status;
+        this.createdDate = LocalDateTime.now();
+
+        if (status == Status.PENDING) this.acceptedDate = null;
+        if (status == Status.ACCEPTED) this.acceptedDate = LocalDateTime.now();
+
     }
+
+    public Friend() {
+
+    }
+
+//    public Friend(int id, int user1Id, int user2Id, Status status) {
+//        this.id = id;
+//        this.user1Id = user1Id;
+//        this.user2Id = user2Id;
+//        this.status = status;
+//    }
 
     public int getId() {
         return id;
@@ -80,6 +83,9 @@ public class Friend {
     }
 
     public void setAcceptedDate(LocalDateTime acceptedDate) {
+//        if (status != Status.ACCEPTED){
+//            System.out.println("Error! Status must be ACCEPTED first");
+//        }
         this.acceptedDate = acceptedDate;
     }
 
