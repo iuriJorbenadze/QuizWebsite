@@ -83,7 +83,7 @@ public class DatabaseSetup {
                 "description TEXT," +
                 "createdByUserId INT," +
                 "createdDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP," +
-                "FOREIGN KEY(createdByUserId) REFERENCES Users(id)" +
+                "FOREIGN KEY(createdByUserId) REFERENCES Users(id) ON DELETE CASCADE" + // Added ON DELETE CASCADE here
                 ")";
         stmt.executeUpdate(createQuizSQL);
     }
