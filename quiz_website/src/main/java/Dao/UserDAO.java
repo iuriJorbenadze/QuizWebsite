@@ -4,6 +4,7 @@ import model.User;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class UserDAO extends AbstractDAO {
@@ -154,5 +155,30 @@ public class UserDAO extends AbstractDAO {
         );
     }
 
+    public List<User> getUsersByIds(List<Integer> userIds) {
+        if (userIds == null || userIds.isEmpty()) {
+            return Collections.emptyList();
+        }
 
+        String placeHolders = String.join(", ", Collections.nCopies(userIds.size(), "?"));
+        String selectSQL = "SELECT * FROM Users WHERE id IN (" + placeHolders + ")";
+
+        try (Connection connection = getConnection();
+             PreparedStatement ps = connection.prepareStatement(selectSQL)) {
+
+            for (int i = 0; i < userIds.size(); i++) {
+                ps.setInt(i + 1, userIds.get(i));
+            }
+
+            ResultSet rs = ps.executeQuery();
+            List<User> users = new ArrayList<>();
+            while (rs.next()) {
+                users.add(mapResultSetToUser(rs));
+            }
+            return users;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return Collections.emptyList();
+        }
+    }
 }
