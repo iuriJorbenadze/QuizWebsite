@@ -53,7 +53,7 @@ public class AchievementService {
             Achievement achievement = new Achievement();
             achievement.setUserId(userId);
             achievement.setAchievementType(type);
-            achievement.setDateEarned(new Date());
+            achievement.setDateEarned(new Date()); // Setting current date
             createAchievement(achievement);
         }
     }
