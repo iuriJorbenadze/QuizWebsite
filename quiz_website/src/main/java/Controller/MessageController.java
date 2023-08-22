@@ -59,5 +59,5 @@ public class MessageController extends HttpServlet {
         boolean deleted = messageService.deleteMessage(messageId);
 
     }
-
+    //all functions added
 }

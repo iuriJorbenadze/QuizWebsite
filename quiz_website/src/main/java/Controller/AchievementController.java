@@ -106,4 +106,5 @@ public class AchievementController extends HttpServlet {
             out.println(e.getMessage());
         }
     }
+    //all functions added
 }

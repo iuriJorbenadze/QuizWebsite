@@ -120,4 +120,5 @@ public class ResultController extends HttpServlet {
         takenQuizService.deleteTakenQuizById(id);
         resp.getWriter().write("Quiz result deleted successfully!");
     }
+    //all functions added
 }

@@ -186,4 +186,5 @@ public class QuestionController extends HttpServlet {
             return new Question(questionId, quizId, content, options, correctAnswer);
         }
     }
+    //all functions added
 }

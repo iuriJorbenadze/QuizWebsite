@@ -233,4 +233,5 @@ public class UserController extends HttpServlet {
             out.println("User not found or deletion failed!");
         }
     }
+    //all functions added
 }

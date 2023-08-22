@@ -106,4 +106,5 @@ public class FriendController extends HttpServlet {
 
         }
     }
+    //all functions added
 }
