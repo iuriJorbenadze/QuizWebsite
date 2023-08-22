@@ -91,4 +91,5 @@ public class AchievementServiceTest {
         assertTrue(achievementService.deleteAchievementById(testAchievement.getId()));
         testAchievement = null;
     }
+    //all_tests_added
 }
