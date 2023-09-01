@@ -74,16 +74,17 @@ public class UserController extends HttpServlet {
                 }
                 break;
 
-            case "validateUserCredentials":
-                String loginUsername = req.getParameter("username");
-                String loginPassword = req.getParameter("password");  // remember, we're just matching password hashes in the example
-                if (userService.validateUserCredentials(loginUsername, loginPassword)) {
-                    out.println("Credentials are valid.");
-                } else {
-                    resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                    out.println("Invalid credentials.");
-                }
-                break;
+//            case "validateUserCredentials":
+//                String loginUsername = req.getParameter("username");
+//                String loginPassword = req.getParameter("password");  // remember, we're just matching password hashes in the example
+//                if (userService.validateUserCredentials(loginUsername, loginPassword)) {
+//                    out.println("Credentials are valid.");
+//                } else {
+////                    resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+////                    out.println("Invalid credentials.");
+//                      resp.sendRedirect("index.jsp?error=true");
+//                }
+//                break;
 
             case "isAdmin":
                 int checkAdminId = Integer.parseInt(req.getParameter("id"));
@@ -108,7 +109,7 @@ public class UserController extends HttpServlet {
 
             default:
                 resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                out.println("Invalid action");
+                out.println("Invalid action get");
                 break;
         }
     }
@@ -149,6 +150,16 @@ public class UserController extends HttpServlet {
                     out.println("User not found or update failed!");
                 }
                 break;
+//a
+            case "validateUserCredentials":
+                String loginUsername = req.getParameter("username");
+                String loginPassword = req.getParameter("password");
+                if (userService.validateUserCredentials(loginUsername, loginPassword)) {
+                    out.println("Credentials are valid.");
+                } else {
+                    resp.sendRedirect("index.jsp?error=true");
+                }
+                break;
 
             case "deleteUser":
                 int deleteId = Integer.parseInt(req.getParameter("id"));
@@ -184,7 +195,7 @@ public class UserController extends HttpServlet {
 
             default:
                 resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                out.println("Invalid action");
+                out.println("Invalid action post");
                 break;
         }
     }
