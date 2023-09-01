@@ -60,17 +60,21 @@
 </head>
 <body>
 
+
 <div class="login-container">
-    <h2>Login</h2>
-    <form name="loginForm" action="/UserController?action=validateUserCredentials" method="POST" onsubmit="return validateForm()">
-        <div class="error" id="error-message"></div>
-        <input type="text" name="username" placeholder="Username" required>
-        <input type="password" name="password" placeholder="Password" required>
-        <button type="submit">Login</button>
+    <h2 style="color: #007BFF;">Login</h2>
+    <form name="loginForm" action="/UserController" method="POST" onsubmit="return validateForm();">
+        <!-- Hidden input field for the action parameter -->
+        <input type="hidden" name="action" value="validateUserCredentials">
+        <input type="text" name="username" placeholder="Username">
+        <input type="password" name="password" placeholder="Password">
+        <button type="submit" >Login</button>
     </form>
+
+    <div id="error-message" class="error">Both fields are required!</div>
+
     <p>Don't have an account? <a href="register.jsp">Register here</a></p>
 </div>
-
 <script>
     function validateForm() {
         const username = document.forms["loginForm"]["username"].value;
@@ -78,10 +82,9 @@
 
         if (username === "" || password === "") {
             document.getElementById("error-message").style.display = "block";
-            document.getElementById("error-message").innerText = "Both fields are required!";
-            return false;
+            return false; // Prevent form submission
         }
-        return true;
+        return true; // Allow form submission
     }
 </script>
 
