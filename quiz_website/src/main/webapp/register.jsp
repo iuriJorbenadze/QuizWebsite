@@ -10,18 +10,21 @@
             align-items: center;
             justify-content: center;
             height: 100vh;
+            margin: 0;
         }
 
         .login-container {
-            background-color: white;
+            background-color: #fff;
             padding: 20px;
             border-radius: 5px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             width: 300px;
+            text-align: center;
         }
 
         .login-container h2 {
-            text-align: center;
+            margin-bottom: 20px;
+            color: #007BFF;
         }
 
         .login-container form {
@@ -50,21 +53,37 @@
             background-color: #0056b3;
         }
 
-        .error {
+        .login-container .error {
             color: red;
             display: none;
+        }
+
+        .login-container p {
+            margin-top: 10px;
+        }
+
+        .login-container a {
+            color: #007BFF;
+            text-decoration: none;
         }
     </style>
 </head>
 <body>
-<form action="UserController" method="post">
-    <input type="hidden" name="action" value="registerUser">
-    Username: <input type="text" name="username" required><br>
-    Password: <input type="password" name="passwordHash" required><br>
-    Email: <input type="email" name="email" required><br>
-    Admin: <input type="checkbox" name="isAdmin" value="true"><br>
-    <input type="submit" value="Register">
-</form>
-<p>Already have an account? <a href="index.jsp">Login here</a></p>
+<div class="login-container">
+    <h2>Register</h2>
+    <form action="UserController" method="post">
+        <input type="hidden" name="action" value="registerUser">
+        <label for="username">Username:</label>
+        <input type="text" name="username" id="username" required><br>
+        <label for="password">Password:</label>
+        <input type="password" name="passwordHash" id="password" required><br>
+        <label for="email">Email:</label>
+        <input type="email" name="email" id="email" required><br>
+        <label for="isAdmin">Admin:</label>
+        <input type="checkbox" name="isAdmin" id="isAdmin" value="true"><br>
+        <button type="submit">Register</button>
+    </form>
+    <p>Already have an account? <a href="index.jsp">Login here</a></p>
+</div>
 </body>
 </html>
