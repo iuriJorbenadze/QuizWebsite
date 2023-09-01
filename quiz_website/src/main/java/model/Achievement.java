@@ -44,6 +44,12 @@ public class Achievement {
     public Achievement() {
     }
 
+    public Achievement( int userId, AchievementType achievementType, Date dateEarned) {
+
+        this.userId = userId;
+        this.achievementType = achievementType;
+        this.dateEarned = dateEarned;
+    }
     public Achievement(int id, int userId, AchievementType achievementType, Date dateEarned) {
         this.id = id;
         this.userId = userId;

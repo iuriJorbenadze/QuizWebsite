@@ -62,7 +62,7 @@
 
 <div class="login-container">
     <h2>Login</h2>
-    <form name="loginForm" action="registerUser" method="POST" onsubmit="return validateForm()">
+    <form name="loginForm" action="/UserController?action=validateUserCredentials" method="POST" onsubmit="return validateForm()">
         <div class="error" id="error-message"></div>
         <input type="text" name="username" placeholder="Username" required>
         <input type="password" name="password" placeholder="Password" required>

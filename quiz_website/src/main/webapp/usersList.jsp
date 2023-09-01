@@ -1,3 +1,5 @@
+<%@ page import="model.User" %>
+<%@ page import="java.util.List" %>
 <!DOCTYPE html>
 <html>
 <head>
