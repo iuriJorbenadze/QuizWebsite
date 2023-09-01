@@ -1,5 +1,6 @@
 package Controller;
 
+import com.google.gson.Gson;
 import model.TakenQuiz;
 import service.TakenQuizService;
 
@@ -10,7 +11,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-@WebServlet("/result")
+@WebServlet("/ResultController")
 public class ResultController extends HttpServlet {
 
     private TakenQuizService takenQuizService = new TakenQuizService();
@@ -65,8 +66,13 @@ public class ResultController extends HttpServlet {
             case "getMostAttemptedQuizzes":
                 limit = Integer.parseInt(req.getParameter("limit"));
                 Map<Long, Long> mostAttempted = takenQuizService.getMostAttemptedQuizzes(limit);
-                resp.getWriter().write(mostAttempted.toString());
+
+                String json = new Gson().toJson(mostAttempted);
+                resp.setContentType("application/json");
+                resp.setCharacterEncoding("UTF-8");
+                resp.getWriter().write(json);
                 break;
+
 
             case "getRecentQuizTakers":
                 limit = Integer.parseInt(req.getParameter("limit"));

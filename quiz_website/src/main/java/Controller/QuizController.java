@@ -1,6 +1,8 @@
 package Controller;
 
+import convinience.GsonUtil;
 import Dao.QuizDAO;
+import com.google.gson.Gson;
 import model.Quiz;
 import service.QuizService;
 import javax.servlet.ServletException;
@@ -28,12 +30,15 @@ public class QuizController extends HttpServlet {
                 Long id = Long.parseLong(req.getParameter("id"));
                 Quiz quizById = quizService.getQuizById(id);
                 if (quizById != null) {
-                    out.print(quizById.toString());
+                    String json = GsonUtil.CUSTOM_GSON.toJson(quizById); // Use the custom Gson instance
+                    out.print(json);
                 } else {
                     resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
                     out.println("Quiz not found.");
                 }
                 break;
+
+
 
             case "getAllQuizzes":
                 List<Quiz> quizzes = quizService.getAllQuizzes();

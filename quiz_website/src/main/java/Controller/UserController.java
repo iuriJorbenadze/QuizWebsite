@@ -1,6 +1,7 @@
 package Controller;
 
 import model.User;
+import service.TakenQuizService;
 import service.UserService;
 import Dao.UserDAO;
 
@@ -12,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
+import java.util.Map;
 
 @WebServlet("/UserController")
 public class UserController extends HttpServlet {
@@ -155,11 +157,14 @@ public class UserController extends HttpServlet {
                 String loginUsername = req.getParameter("username");
                 String loginPassword = req.getParameter("password");
                 if (userService.validateUserCredentials(loginUsername, loginPassword)) {
-                    out.println("Credentials are valid.");
+                    // Redirect to a dashboard controller or servlet
+                    resp.sendRedirect("dashboardController");
                 } else {
                     resp.sendRedirect("index.jsp?error=true");
                 }
                 break;
+
+
 
             case "deleteUser":
                 int deleteId = Integer.parseInt(req.getParameter("id"));
