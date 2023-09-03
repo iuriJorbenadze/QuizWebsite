@@ -30,13 +30,19 @@ public class QuizController extends HttpServlet {
                 Long id = Long.parseLong(req.getParameter("id"));
                 Quiz quizById = quizService.getQuizById(id);
                 if (quizById != null) {
-                    String json = GsonUtil.CUSTOM_GSON.toJson(quizById); // Use the custom Gson instance
-                    out.print(json);
+                    if ("json".equals(req.getParameter("format"))) {
+                        String json = GsonUtil.CUSTOM_GSON.toJson(quizById);
+                        out.print(json);
+                    } else {
+                        req.setAttribute("quiz", quizById);
+                        req.getRequestDispatcher("/quiz.jsp").forward(req, resp);
+                    }
                 } else {
                     resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
                     out.println("Quiz not found.");
                 }
                 break;
+
 
 
 
@@ -51,6 +57,39 @@ public class QuizController extends HttpServlet {
                 resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 out.println("Invalid action");
                 break;
+
+            case "displayQuiz":
+                req.getRequestDispatcher("/quiz.jsp").forward(req, resp);
+                break;
+
+
+//            case "displayQuiz":
+//                String quizIdStr = req.getParameter("quizId");
+//                if (quizIdStr == null || quizIdStr.trim().isEmpty()) {
+//                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+//                    out.println("Missing or incorrect quizId parameter.");
+//                    return; // Exit the method
+//                }
+//
+//                Long quizId;
+//                try {
+//                    quizId = Long.parseLong(quizIdStr);
+//                } catch (NumberFormatException e) {
+//                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+//                    out.println("Invalid quizId parameter.");
+//                    return; // Exit the method
+//                }
+//
+//                Quiz quiz = quizService.getQuizById(quizId);
+//                if (quiz != null) {
+//                    req.setAttribute("quiz", quiz);
+//                    req.getRequestDispatcher("/quiz.jsp").forward(req, resp);
+//                } else {
+//                    resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+//                    out.println("Quiz not found.");
+//                }
+//                break;
+
         }
     }
 

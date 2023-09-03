@@ -49,6 +49,11 @@
                 const row = document.createElement('tr');
 
                 const quizTitleCell = document.createElement('td');
+                // Creating a hyperlink for the quiz title
+                const quizLink = document.createElement('a');
+                quizLink.href = `/QuizController?action=displayQuiz&quizId=${quizId}`;
+
+                quizTitleCell.appendChild(quizLink);
                 row.appendChild(quizTitleCell);
 
                 const attemptsCell = document.createElement('td');
@@ -58,11 +63,13 @@
                 tableBody.appendChild(row);
 
                 fetchPromises.push(
-                    fetch(`http://localhost:8082/QuizController?action=getQuizById&id=${quizId}`)
+                    fetch(`http://localhost:8082/QuizController?action=getQuizById&id=${quizId}&format=json`)
                         .then(response => response.json())
                         .then(quizData => {
-                            quizTitleCell.textContent = quizData.title;
+                            console.log(quizData); // For debugging
+                            quizLink.textContent = quizData.title;  // Assigning text to the hyperlink
                         })
+
                 );
             }
 
