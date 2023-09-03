@@ -14,7 +14,8 @@
     <!-- Questions will be dynamically populated here -->
 </div>
 
-<button onclick="submitAnswers()">Submit Quiz</button>
+<button id="submitQuiz">Submit Quiz</button>
+
 
 
 
@@ -54,9 +55,40 @@
             });
     }
 
-    function submitAnswers() {
-        // Logic to gather answers and submit to server, then redirect to results page or show results.
-    }
+
+
+    document.getElementById('submitQuiz').addEventListener('click', async function() {
+        let answers = {};
+
+        // Adjusting the selector to look for "question" prefix and updating the replace argument.
+        document.querySelectorAll('input[name^="question"]').forEach(input => {
+            if (input.checked) {
+                let questionId = input.name.replace('question', '');
+                answers[questionId] = input.value;
+            }
+        });
+
+        let response = await fetch('/ResultController?action=submitQuiz', {
+            method: 'POST',
+            body: JSON.stringify(answers),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        let result = await response.json();
+        if (response.status !== 200) {
+            console.error("Error from the server:", result);
+            return;
+        }
+
+        // Display the result to the user
+        alert(result.message + " Your score is: " + result.score);
+
+    });
+
+
+
 
 </script>
 

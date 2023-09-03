@@ -1,7 +1,9 @@
 package service;
 
 
+import Dao.QuestionDAO;
 import Dao.TakenQuizDAO;
+import model.Question;
 import model.TakenQuiz;
 
 import java.sql.PreparedStatement;
@@ -16,6 +18,8 @@ import java.util.stream.Collectors;
 public class TakenQuizService {
 
     private final TakenQuizDAO takenQuizDAO;
+
+    private final QuestionService questionService = new QuestionService(new QuestionDAO());;
     private static final int PASSING_SCORE = 5;  // you can set a threshold for passing score
 
     public TakenQuizService() {
@@ -78,6 +82,9 @@ public class TakenQuizService {
             }
         }
     }
+
+
+    //ADD TO QUIZ DISPLAY PAGE
     public List<TakenQuiz> getTopScorersByQuiz(Long quizId, int limit) {
         List<TakenQuiz> quizzes = takenQuizDAO.getAllTakenQuizzesForQuiz(quizId);
 
@@ -128,4 +135,38 @@ public class TakenQuizService {
                 .map(Map.Entry::getKey)
                 .orElse(null);
     }
+
+    public int calculateScore(Map<Long, String> userAnswers) {
+        int score = 0;
+
+        for (Map.Entry<Long, String> entry : userAnswers.entrySet()) {
+            System.out.println("Question ID: " + entry.getKey() + ", Submitted Answer: " + entry.getValue());
+            Long questionId = entry.getKey();
+            String submittedAnswer = entry.getValue();
+
+            Question question = questionService.getQuestionById(questionId);
+
+            if (question == null) {
+                System.out.println("Question with ID: " + questionId + " was not found in the database!");
+                continue;
+            }
+
+            String correctAnswer = question.getCorrectAnswer();
+            if (correctAnswer == null) {
+                System.out.println("Correct answer for Question ID: " + questionId + " is null!");
+                continue;
+            }
+
+            if (correctAnswer.equals(submittedAnswer)) {
+                score++;
+            } else {
+                System.out.println("Question not found or answer didn't match for Question ID: " + questionId);
+            }
+        }
+        System.out.println("Final Calculated Score: " + score);
+        return score;
+    }
+
+
+
 }
