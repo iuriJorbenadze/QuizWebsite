@@ -1,5 +1,7 @@
-package controller;
+package Controller;
 
+import Dao.QuestionDAO;
+import com.google.gson.Gson;
 import model.Question;
 import service.QuestionService;
 
@@ -17,31 +19,46 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 
-@WebServlet(name = "QuestionController", urlPatterns = {"/question/*"})
+
+@WebServlet("/QuestionController")
 public class QuestionController extends HttpServlet {
 
-    private final QuestionService questionService;
+    private final QuestionService questionService = new QuestionService(new QuestionDAO());;
 
-    public QuestionController(QuestionService questionService) {
-        this.questionService = questionService;
+    public QuestionController() {
+
     }
 
 
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String action = req.getPathInfo();
+        String action = req.getParameter("action");
 
-        if (action.startsWith("/get/")) {
-            Long id = Long.parseLong(action.split("/")[2]);
+
+        if ("get".equals(action)) {
+            Long id = Long.parseLong(req.getParameter("id"));
             Question question = questionService.getQuestionById(id);
             resp.getWriter().write(toJson(question));
-        } else if (action.startsWith("/allForQuiz/")) {
-            Long quizId = Long.parseLong(action.split("/")[2]);
-            List<Question> questions = questionService.getAllQuestionsForQuiz(quizId);
-            resp.getWriter().write(toJson(questions));
-        }
+        } else if ("getAllQuestionsForQuiz".equals(action)) {
+            try {
+                Long quizId = Long.parseLong(req.getParameter("quizId"));
+                List<Question> questions = questionService.getAllQuestionsForQuiz(quizId);
 
+                // Convert the list of questions to JSON and send back as a response
+                String json = new Gson().toJson(questions); // Assuming you are using Gson library
+                resp.setContentType("application/json");
+                resp.setCharacterEncoding("UTF-8");
+                resp.getWriter().write(json);
+            } catch (NumberFormatException e) {
+                // handle exception, maybe return an error response
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                resp.getWriter().write("Invalid quiz ID");
+            }
+        } else {
+            // Handle unknown action, maybe return a 404 or a default response
+            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        }
         if (action.startsWith("/complete/")) {
             Long id = Long.parseLong(action.split("/")[2]);
             Question completeQuestion = questionService.getCompleteQuestionById(id);

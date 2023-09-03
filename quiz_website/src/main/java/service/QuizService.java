@@ -1,13 +1,18 @@
 package service;
 
+import Dao.QuestionDAO;
 import Dao.QuizDAO;
+import model.Question;
 import model.Quiz;
 
 import java.util.List;
+import java.util.Map;
 
 public class QuizService {
 
     private QuizDAO quizDAO;
+
+    private QuestionDAO questionDAO = new QuestionDAO();
 
     // Constructor
     public QuizService(QuizDAO quizDAO) {
@@ -40,6 +45,18 @@ public class QuizService {
 
         return quizDAO.createQuiz(quiz);
     }
+
+    public int calculateScore(Map<Long, String> answers) {
+        int score = 0;
+        for(Map.Entry<Long, String> entry: answers.entrySet()) {
+            Question q = questionDAO.getQuestionById(entry.getKey());
+            if(q.getCorrectAnswer().equals(entry.getValue())) {
+                score++;
+            }
+        }
+        return score;
+    }
+
 
     // Update an existing quiz
     public boolean updateQuiz(Quiz quiz) {

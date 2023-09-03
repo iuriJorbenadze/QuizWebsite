@@ -1,9 +1,12 @@
 package Controller;
 
+import Dao.QuestionDAO;
 import convinience.GsonUtil;
 import Dao.QuizDAO;
 import com.google.gson.Gson;
+import model.Question;
 import model.Quiz;
+import service.QuestionService;
 import service.QuizService;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -13,12 +16,15 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @WebServlet("/QuizController")
 public class QuizController extends HttpServlet {
 
     private QuizService quizService = new QuizService(new QuizDAO());
+    private QuestionService questionService = new QuestionService(new QuestionDAO());
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -61,6 +67,33 @@ public class QuizController extends HttpServlet {
             case "displayQuiz":
                 req.getRequestDispatcher("/quiz.jsp").forward(req, resp);
                 break;
+
+            case "takeQuiz":
+                Long quizId = Long.parseLong(req.getParameter("quizId"));
+                Quiz quiz = quizService.getQuizById(quizId);
+
+                List<Question> questions = questionService.getAllQuestionsForQuiz(quizId);
+
+                req.setAttribute("quiz", quiz);
+                req.setAttribute("questions", questions);
+                req.getRequestDispatcher("/takeQuiz.jsp").forward(req, resp);
+                break;
+            case "submitQuiz":
+                Long quizIdForSubmission = Long.parseLong(req.getParameter("quizId"));  // Make sure to include the quizId as a hidden field in your form
+                List<Question> questionsForSubmission = questionService.getAllQuestionsForQuiz(quizIdForSubmission);
+
+                Map<Long, String> answers = new HashMap<>();
+                for(Question q: questionsForSubmission) {
+                    String answer = req.getParameter("answer" + q.getQuestionId());
+                    answers.put(q.getQuestionId(), answer);
+                }
+
+                int score = quizService.calculateScore(answers);
+                // Store the score and maybe redirect the user to a results page
+                break;
+
+
+
 
 
 //            case "displayQuiz":

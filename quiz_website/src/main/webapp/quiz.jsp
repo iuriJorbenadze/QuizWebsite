@@ -33,8 +33,11 @@
     }
 
     function startQuiz() {
-        // Logic to initiate the quiz, probably navigating to another page
+        const urlParams = new URLSearchParams(window.location.search);
+        const quizId = urlParams.get('quizId');
+        window.location.href = `/QuizController?action=takeQuiz&quizId=${quizId}`;
     }
+
 </script>
 
 </body>
