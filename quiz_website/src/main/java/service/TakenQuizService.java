@@ -3,7 +3,9 @@ package service;
 
 import Dao.QuestionDAO;
 import Dao.TakenQuizDAO;
+import com.mysql.cj.conf.ConnectionUrlParser;
 import model.Question;
+import model.ResultInfo;
 import model.TakenQuiz;
 
 import java.sql.PreparedStatement;
@@ -166,6 +168,35 @@ public class TakenQuizService {
         System.out.println("Final Calculated Score: " + score);
         return score;
     }
+
+    //Could not import Pair so quick import suggested this
+    public ConnectionUrlParser.Pair<Integer, List<ResultInfo>> calculateScoreDetailed(Map<Long, String> userAnswers) {
+        int score = 0;
+        List<ResultInfo> resultList = new ArrayList<>();
+
+        for (Map.Entry<Long, String> entry : userAnswers.entrySet()) {
+            ResultInfo resultInfo = new ResultInfo();
+            resultInfo.setQuestionId(entry.getKey());
+            resultInfo.setSubmittedAnswer(entry.getValue());
+
+            Question question = questionService.getQuestionById(entry.getKey());
+
+            if (question != null) {
+                resultInfo.setCorrectAnswer(question.getCorrectAnswer());
+                if (question != null && entry.getValue().equals(question.getCorrectAnswer())) {
+
+                    score++;
+                    resultInfo.setCorrect(true);
+                } else {
+                    resultInfo.setCorrect(false);
+                }
+            }
+            resultList.add(resultInfo);
+        }
+        System.out.println("detailed score: "+score);
+        return new ConnectionUrlParser.Pair<>(score, resultList);
+    }
+
 
 
 

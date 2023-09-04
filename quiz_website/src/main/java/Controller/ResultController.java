@@ -2,6 +2,9 @@ package Controller;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.mysql.cj.conf.ConnectionUrlParser;
+import model.ResultInfo;
+import model.ResultsResponse;
 import model.TakenQuiz;
 import service.TakenQuizService;
 
@@ -22,6 +25,7 @@ public class ResultController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String action = req.getParameter("action");
+        System.out.println("GET Request action: " + action);
 
         switch (action) {
             case "getById":
@@ -94,6 +98,30 @@ public class ResultController extends HttpServlet {
                 double averageTime = takenQuizService.getAverageTimeTakenForQuiz(quizId);
                 resp.getWriter().write(Double.toString(averageTime));
                 break;
+
+            case "getQuizResults":
+
+                resp.setContentType("application/json");
+                resp.setCharacterEncoding("UTF-8");
+                Gson gson = new Gson();
+
+                List<ResultInfo> results = (List<ResultInfo>) req.getSession().getAttribute("quizResults");
+                Integer totalScore = (Integer) req.getSession().getAttribute("totalScore");
+
+                if(results == null || totalScore == null) {
+                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    resp.getWriter().write("{\"message\":\"Results or totalScore not found in the session.\"}");
+                    System.out.println("getQuizResults, results or total score is null");
+                    return;  // Important: This will exit the method early to avoid further processing.
+                }
+
+                String jsonResponse = gson.toJson(new ResultsResponse(results, totalScore));
+                resp.getWriter().write(jsonResponse);
+
+
+                System.out.println("getQuizResults json: "+ jsonResponse);
+                break;
+
         }
     }
 
@@ -101,6 +129,7 @@ public class ResultController extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
         String action = req.getParameter("action");
+        System.out.println("POST Request action: " + action);
 
         if ("create".equals(action)) {
             TakenQuiz takenQuiz = new TakenQuiz();
@@ -131,17 +160,42 @@ public class ResultController extends HttpServlet {
 
                 System.out.println("Calculated Score: " + score);
 
-                resp.setContentType("application/json");
-                resp.setCharacterEncoding("UTF-8");
-                resp.getWriter().write("{\"message\": \"Quiz submitted successfully!\", \"score\":" + score + "}");
+                if (isAjaxRequest(req)) {
+                    resp.setContentType("application/json");
+                    resp.setCharacterEncoding("UTF-8");
+                    resp.getWriter().write("{\"message\": \"Quiz submitted successfully!\", \"score\":" + score + "}");
+                }  else {
+                    resp.setContentType("application/json");
+                    resp.setCharacterEncoding("UTF-8");
+                    ConnectionUrlParser.Pair<Integer, List<ResultInfo>> result = takenQuizService.calculateScoreDetailed(userAnswers);
+
+                    // This is a potential place to set the attributes
+                    req.getSession().setAttribute("quizResults", result.right);
+                    req.getSession().setAttribute("totalScore", result.left);
+
+                    // Convert the result to JSON and send it back
+                    Gson gson1 = new Gson();
+                    String jsonResponse = gson1.toJson(new ResultsResponse( result.right, result.left));
+                    resp.getWriter().write(jsonResponse);
+                    System.out.println("Response JSON: " + jsonResponse);
+                }
 
             } catch (Exception e) {
-                e.printStackTrace(); // to get a clear understanding of what went wrong
+                e.printStackTrace();
                 resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 resp.getWriter().write("{\"message\":\"Error processing quiz submission\"}");
             }
         }
 
+
+
+
+
+    }
+
+    private boolean isAjaxRequest(HttpServletRequest req) {
+        String requestedWithHeader = req.getHeader("X-Requested-With");
+        return "XMLHttpRequest".equals(requestedWithHeader);
     }
 
     @Override

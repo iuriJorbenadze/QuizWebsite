@@ -1,18 +1,92 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quiz Details</title>
+    <style>
+        /* Reset margins and paddings */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Background and font setting */
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            background: #f4f7f9;
+            color: #333;
+            padding: 20px;
+        }
+
+        /* Centered content */
+        main {
+            max-width: 800px;
+            margin: 40px auto;
+            background: #fff;
+            padding: 30px;
+            box-shadow: 0 3px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Styling Headings */
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 15px;
+        }
+
+        p {
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+        }
+
+        /* Button Styling */
+        button {
+            background-color: #007BFF;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Dashboard link styling */
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            color: #007BFF;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        a:hover {
+            color: #0056b3;
+        }
+
+    </style>
 </head>
+
 <body>
 
-<h1 id="quizTitle">Loading...</h1>
-<p id="quizDescription">Loading description...</p>
-<p id="quizCreatedBy">Created By: Loading...</p>
-<p id="quizCreatedDate">Created Date: Loading...</p>
+<main>
+    <h1 id="quizTitle">Loading...</h1>
+    <p id="quizDescription">Loading description...</p>
+    <p id="quizCreatedBy">Created By: Loading...</p>
+    <p id="quizCreatedDate">Created Date: Loading...</p>
 
-<button onclick="startQuiz()">Start Quiz</button>
+    <button onclick="startQuiz()">Start Quiz</button>
+
+    <a href="dashboard.jsp">Back to Dashboard</a>
+</main>
+
+
+
 
 <script>
     window.onload = function() {
