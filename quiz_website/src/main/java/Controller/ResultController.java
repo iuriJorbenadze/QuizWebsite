@@ -165,7 +165,12 @@ public class ResultController extends HttpServlet {
 
                 // Extract userAnswers and quizId from the payload
                 Type answersType = new TypeToken<Map<Long, String>>(){}.getType();
-                Map<Long, String> userAnswers = gson.fromJson(payload.get("answers").toString(), answersType);
+//                System.out.println("payload answers: " + payload.get("answers").toString());
+
+                String answersJson = gson.toJson(payload.get("answers"));
+                Map<Long, String> userAnswers = gson.fromJson(answersJson, answersType);
+
+
                 Long quizIdCur = Long.parseLong(payload.get("quizId").toString());
 
                 int score = takenQuizService.calculateScore(userAnswers);
