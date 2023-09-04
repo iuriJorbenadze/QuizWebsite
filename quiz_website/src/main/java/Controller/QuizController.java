@@ -4,6 +4,7 @@ import Dao.QuestionDAO;
 import convinience.GsonUtil;
 import Dao.QuizDAO;
 import com.google.gson.Gson;
+import model.Option;
 import model.Question;
 import model.Quiz;
 import service.QuestionService;
@@ -16,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -93,7 +95,12 @@ public class QuizController extends HttpServlet {
                 break;
 
 
-
+            case "createQuiz":
+                Long userId = Long.parseLong(req.getParameter("userId"));
+                // You might also store the userId in the session or request for use in the JSP form
+                req.setAttribute("userId", userId);
+                req.getRequestDispatcher("/createQuiz.jsp").forward(req, resp);
+                break;
 
 
 //            case "displayQuiz":
@@ -128,14 +135,52 @@ public class QuizController extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String title = req.getParameter("title");
-        String description = req.getParameter("description");
-        Long createdByUserId = Long.parseLong(req.getParameter("createdByUserId"));
-        LocalDateTime createdDate = LocalDateTime.now();
+        String operation = req.getParameter("operation");
 
-        Quiz newQuiz = new Quiz(title, description, createdByUserId, createdDate);
-        handleQuizCreationOrUpdate(newQuiz, resp);
+        switch (operation) {
+            case "createQuiz":
+                // Extracting details from the form
+                String title = req.getParameter("title");
+                String description = req.getParameter("description");
+                Long createdByUserId = Long.parseLong(req.getParameter("createdByUserId"));
+                LocalDateTime createdDate = LocalDateTime.now();
+
+                // Creating the Quiz object
+                Quiz newQuiz = new Quiz(null, title, description, createdByUserId, createdDate);
+                handleQuizCreationOrUpdate(newQuiz, resp);
+
+                // Fetching the ID of the newly created Quiz
+                Long quizId = newQuiz.getQuizId();
+
+                // Extract questions, options, and correct answers from the request
+                String[] questionContents = req.getParameterValues("questionText[]");
+
+                if (questionContents != null) {
+                    for (int i = 0; i < questionContents.length; i++) {
+                        List<String> options = new ArrayList<>();
+                        for (int j = 1; j <= 4; j++) {
+                            String[] optionArray = req.getParameterValues("option" + j + "[]");
+                            if (optionArray != null && optionArray.length > i) {
+                                options.add(optionArray[i]);
+                            }
+                        }
+
+                        String[] correctOptionsArray = req.getParameterValues("correctOption[]");
+                        String correctOption = (correctOptionsArray != null && correctOptionsArray.length > i)
+                                ? options.get(Integer.parseInt(correctOptionsArray[i]) - 1)
+                                : null;
+
+                        Question newQuestion = new Question(quizId, questionContents[i], options, correctOption);
+                        questionService.createQuestion(newQuestion);
+                    }
+                }
+
+                // Redirect to the quiz page after creation
+                resp.sendRedirect("/QuizController?action=displayQuiz&quizId=" + quizId);
+                break;
+        }
     }
+
 
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

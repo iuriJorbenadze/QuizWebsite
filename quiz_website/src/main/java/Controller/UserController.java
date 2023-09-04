@@ -10,6 +10,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
@@ -153,16 +154,27 @@ public class UserController extends HttpServlet {
                 }
                 break;
 //a
+            //LOGIN
             case "validateUserCredentials":
                 String loginUsername = req.getParameter("username");
-                String loginPassword = req.getParameter("password");
-                if (userService.validateUserCredentials(loginUsername, loginPassword)) {
+                String loginPassword = req.getParameter("password"); // This will later be hashed before comparison
+
+                User authenticatedUser = userService.getUserByCredentials(loginUsername, loginPassword);
+
+                if (authenticatedUser != null) {
+                    // The user is authenticated
+
+                    // Store the user object in the session
+                    HttpSession session = req.getSession();
+                    session.setAttribute("user", authenticatedUser);
+
                     // Redirect to a dashboard controller or servlet
                     resp.sendRedirect("dashboardController");
                 } else {
                     resp.sendRedirect("index.jsp?error=true");
                 }
                 break;
+
 
 
 

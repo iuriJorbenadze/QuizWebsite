@@ -1,3 +1,4 @@
+<%@ page import="model.User" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -37,6 +38,10 @@
     <!-- Rows will be appended here dynamically -->
     </tbody>
 </table>
+
+
+<a href="QuizController?action=createQuiz&userId=<%=((User) session.getAttribute("user")).getUserId()%>">Create Quiz</a>
+
 
 <script>
     fetch('http://localhost:8082/ResultController?action=getMostAttemptedQuizzes&limit=5')
