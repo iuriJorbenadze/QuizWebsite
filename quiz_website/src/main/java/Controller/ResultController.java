@@ -115,7 +115,10 @@ public class ResultController extends HttpServlet {
                     return;  // Important: This will exit the method early to avoid further processing.
                 }
 
-                String jsonResponse = gson.toJson(new ResultsResponse(results, totalScore));
+                //Long quizIdCur = Long.parseLong(req.getParameter("quizId"));
+
+
+                String jsonResponse = gson.toJson(new ResultsResponse( totalScore,results));
                 resp.getWriter().write(jsonResponse);
 
 
@@ -145,7 +148,6 @@ public class ResultController extends HttpServlet {
         }
 
 
-
         if ("submitQuiz".equals(action)) {
             System.out.println("Inside submitQuiz action");
             try {
@@ -153,18 +155,24 @@ public class ResultController extends HttpServlet {
                 System.out.println("jsonpayload: " + jsonPayload);
 
                 Gson gson = new Gson();
-                Type type = new TypeToken<Map<Long, String>>(){}.getType();
 
-                Map<Long, String> userAnswers = gson.fromJson(jsonPayload, type);
+                // Retrieve the combined payload
+                Type payloadType = new TypeToken<Map<String, Object>>(){}.getType();
+                Map<String, Object> payload = gson.fromJson(jsonPayload, payloadType);
+
+                // Extract userAnswers and quizId from the payload
+                Type answersType = new TypeToken<Map<Long, String>>(){}.getType();
+                Map<Long, String> userAnswers = gson.fromJson(payload.get("answers").toString(), answersType);
+                Long quizIdCur = Long.parseLong(payload.get("quizId").toString());
+
                 int score = takenQuizService.calculateScore(userAnswers);
-
                 System.out.println("Calculated Score: " + score);
 
                 if (isAjaxRequest(req)) {
                     resp.setContentType("application/json");
                     resp.setCharacterEncoding("UTF-8");
                     resp.getWriter().write("{\"message\": \"Quiz submitted successfully!\", \"score\":" + score + "}");
-                }  else {
+                } else {
                     resp.setContentType("application/json");
                     resp.setCharacterEncoding("UTF-8");
                     ConnectionUrlParser.Pair<Integer, List<ResultInfo>> result = takenQuizService.calculateScoreDetailed(userAnswers);
@@ -174,8 +182,7 @@ public class ResultController extends HttpServlet {
                     req.getSession().setAttribute("totalScore", result.left);
 
                     // Convert the result to JSON and send it back
-                    Gson gson1 = new Gson();
-                    String jsonResponse = gson1.toJson(new ResultsResponse( result.right, result.left));
+                    String jsonResponse = gson.toJson(new ResultsResponse(result.left, result.right));
                     resp.getWriter().write(jsonResponse);
                     System.out.println("Response JSON: " + jsonResponse);
                 }

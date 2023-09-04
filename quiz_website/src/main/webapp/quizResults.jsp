@@ -103,12 +103,16 @@
 </table>
 <h2 id="finalScore"></h2>
 
-<a href="quiz.jsp" class="back-to-quiz">Back to Quiz Page</a>
-
-
+<a href="#" id="backToQuizLink" class="back-to-quiz">Back to Quiz Page</a>
 
 <script>
     document.addEventListener("DOMContentLoaded", function(event) {
+        // Extract quizId from URL and set the back link
+        const urlParams = new URLSearchParams(window.location.search);
+        const quizId = urlParams.get('quizId');
+        const backLink = document.getElementById('backToQuizLink');
+        backLink.href = `/QuizController?action=displayQuiz&quizId=${quizId}`;
+
         // Fetch the quiz results automatically when the page is loaded.
         fetch('/ResultController?action=getQuizResults')
             .then(response => {
@@ -117,14 +121,6 @@
                 }
                 return response.json();
             })
-            .then(data => {
-                if (data.quizResults && data.totalScore !== undefined) {
-                    displayResults(data);
-                } else {
-                    console.error("Failed to load quiz results or data is missing.");
-                }
-            })
-
             .then(data => {
                 if (data.quizResults && data.totalScore !== undefined) {
                     displayResults(data);
@@ -159,9 +155,9 @@
 
             document.getElementById('finalScore').textContent = "Final Score: " + data.totalScore;
         }
-
-
     });
 </script>
+
 </body>
+
 </html>

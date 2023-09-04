@@ -5,12 +5,17 @@ import model.ResultInfo;
 import java.util.List;
 
 public class ResultsResponse {
+
+
     private int totalScore;
     private List<ResultInfo> quizResults;
 
-    public ResultsResponse( List<ResultInfo> quizResults, int totalScore) {
+
+
+    public ResultsResponse(int totalScore, List<ResultInfo> quizResults) {
         this.totalScore = totalScore;
         this.quizResults = quizResults;
+
     }
 
     public int getTotalScore() {
@@ -27,5 +32,15 @@ public class ResultsResponse {
 
     public void setQuizResults(List<ResultInfo> quizResults) {
         this.quizResults = quizResults;
+    }
+
+
+    @Override
+    public String toString() {
+        return "ResultsResponse{" +
+                "totalScore=" + totalScore +
+                ", quizResults=" + quizResults +
+
+                '}';
     }
 }

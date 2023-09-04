@@ -137,9 +137,17 @@
             }
         });
 
+        let urlParams = new URLSearchParams(window.location.search);
+        let quizId = urlParams.get('quizId');
+
+        let payload = {
+            answers: answers,
+            quizId: quizId
+        };
+
         let response = await fetch('/ResultController?action=submitQuiz', {
             method: 'POST',
-            body: JSON.stringify(answers),
+            body: JSON.stringify(payload),
             headers: {
                 'Content-Type': 'application/json'
             }
@@ -148,8 +156,7 @@
         let result = await response.json();
 
         if (result.quizResults && typeof result.totalScore !== 'undefined') {
-            // Handle success and maybe render the results or redirect
-            window.location.href = "/quizResults.jsp";
+            window.location.href = "/quizResults.jsp?quizId=" + quizId;
         } else {
             console.error("Quiz submission failed");
             alert(result.message);
@@ -160,9 +167,7 @@
             alert("Network or server error occurred");
             return;
         }
-
     });
-
 
 
 
