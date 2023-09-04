@@ -100,4 +100,8 @@ public class QuizService {
 
 
     }
+
+    public boolean doesQuizWithTitleExist(String title) {
+        return quizDAO.doesQuizWithTitleExist(title);
+    }
 }

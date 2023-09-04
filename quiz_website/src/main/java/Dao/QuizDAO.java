@@ -117,6 +117,24 @@ public class QuizDAO extends AbstractDAO {
     }
 
 
+    public boolean doesQuizWithTitleExist(String title) {
+        String query = "SELECT COUNT(*) FROM Quizzes WHERE title = ?";
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, title);
+
+            ResultSet resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                int count = resultSet.getInt(1);
+                return count > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;  // Default to false if there's an error or no data.
+    }
+
     private Quiz mapResultSetToQuiz(ResultSet resultSet) throws SQLException {
         Quiz quiz = new Quiz(
         resultSet.getLong("id"),

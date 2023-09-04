@@ -6,6 +6,7 @@ import com.mysql.cj.conf.ConnectionUrlParser;
 import model.ResultInfo;
 import model.ResultsResponse;
 import model.TakenQuiz;
+import model.User;
 import service.TakenQuizService;
 
 import javax.servlet.*;
@@ -13,6 +14,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -168,6 +171,37 @@ public class ResultController extends HttpServlet {
                 int score = takenQuizService.calculateScore(userAnswers);
                 System.out.println("Calculated Score: " + score);
 
+                // Creating the TakenQuiz object
+                LocalDateTime endTime = LocalDateTime.now();
+                LocalDateTime startTime = (LocalDateTime) req.getSession().getAttribute("startTime");
+                if (startTime == null) {
+                    // Handle the case if startTime is not set, e.g., set to current time or log an error
+                    startTime = LocalDateTime.now();
+                }
+                Duration durationTaken = Duration.between(startTime, endTime);
+
+                TakenQuiz takenQuiz = new TakenQuiz();
+                User currentUser = (User) req.getSession().getAttribute("user");
+                if (currentUser != null) {
+                    takenQuiz.setUserId((long)currentUser.getUserId());
+                } else {
+                    // Handle the scenario when the user object is not found in the session
+                    System.err.println("No user found in session!");
+                }
+
+                takenQuiz.setQuizId(quizIdCur);
+                takenQuiz.setScore(score);
+                takenQuiz.setAttemptDate(endTime);
+                takenQuiz.setTimeTaken(durationTaken);
+
+                //feedback should be added from a user after finishing
+
+                takenQuiz.setStatus("Completed");
+
+                // Save takenQuiz to database
+                takenQuizService.createTakenQuiz(takenQuiz);
+                System.out.println("Taken quiz created");
+
                 if (isAjaxRequest(req)) {
                     resp.setContentType("application/json");
                     resp.setCharacterEncoding("UTF-8");
@@ -193,7 +227,6 @@ public class ResultController extends HttpServlet {
                 resp.getWriter().write("{\"message\":\"Error processing quiz submission\"}");
             }
         }
-
 
 
 

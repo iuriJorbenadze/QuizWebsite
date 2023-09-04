@@ -138,6 +138,7 @@ public class QuizController extends HttpServlet {
         String operation = req.getParameter("operation");
 
         switch (operation) {
+
             case "createQuiz":
                 // Extracting details from the form
                 String title = req.getParameter("title");
@@ -145,12 +146,21 @@ public class QuizController extends HttpServlet {
                 Long createdByUserId = Long.parseLong(req.getParameter("createdByUserId"));
                 LocalDateTime createdDate = LocalDateTime.now();
 
+                // Check if a quiz with the same title already exists
+                if (quizService.doesQuizWithTitleExist(title)) {
+                    // Handle duplicate title scenario
+                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    resp.getWriter().write("{\"message\":\"A quiz with the same title already exists.\"}");
+                    return; // Exit from the method
+                }
+
                 // Creating the Quiz object
                 Quiz newQuiz = new Quiz(null, title, description, createdByUserId, createdDate);
                 handleQuizCreationOrUpdate(newQuiz, resp);
 
                 // Fetching the ID of the newly created Quiz
                 Long quizId = newQuiz.getQuizId();
+                System.out.println("new quizid is: " + quizId);
 
                 // Extract questions, options, and correct answers from the request
                 String[] questionContents = req.getParameterValues("questionText[]");
@@ -178,6 +188,8 @@ public class QuizController extends HttpServlet {
                 // Redirect to the quiz page after creation
                 resp.sendRedirect("/QuizController?action=displayQuiz&quizId=" + quizId);
                 break;
+
+
         }
     }
 
