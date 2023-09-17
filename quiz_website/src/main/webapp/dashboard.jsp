@@ -17,16 +17,23 @@
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
 
     <style>
+        /* Basic Page Styles */
+
+        body, html {
+            overflow-y: hidden;   /* this will prevent scrolling on the entire page */
+            height: 100%;         /* sets the body to full height */
+        }
+
+
         body {
-            /*background-image: url('assets/Cool Sky.jpg');*/
             background-size: cover;
             background-repeat: no-repeat;
             font-family: 'Open Sans', sans-serif;
             color: #eee;
         }
+
         .background-style {
             background-color: rgb(255, 255, 255);
-            /*background-image: url('assets/Cool Sky.jpg');*/
             background-size: cover;
             background-repeat: no-repeat;
             min-height: 100vh;
@@ -37,17 +44,19 @@
             min-height: 100vh;
         }
 
-        .d-flex.justify-content-between.align-items-center {
-            align-items: center;
-            justify-content: space-between;
-        }
-
+        /* Header Styles */
         .container-fluid.bg-dark.text-white {
             overflow: hidden;
             padding-top: 10px;
             padding-bottom: 10px;
         }
 
+        .d-flex.justify-content-between.align-items-center {
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* Welcome Message Styles */
         .welcome-message {
             background-color: transparent;
             border: 1px solid #eee;
@@ -61,45 +70,30 @@
             color: #304af1;
         }
 
-
+        /* Sidebar Styles */
         aside {
             position: fixed;
             top: 0;
             left: 0;
+            width: 250px;
             height: 100vh;
-            overflow-y: auto; /* Allow vertical scroll if content overflows */
-            background-color: transparent;
+            overflow-y: auto;
+            background-color: #007BFF;
             border-right: 1px solid #eee;
         }
 
-        /*!* Custom scrollbar *!*/
-        /*aside::-webkit-scrollbar {*/
-        /*    width: 8px;*/
-        /*}*/
-
-        /*aside::-webkit-scrollbar-thumb {*/
-        /*    background: rgba(255, 255, 255, 0.3);*/
-        /*    border-radius: 4px;*/
-        /*}*/
-
-        /*aside::-webkit-scrollbar-thumb:hover {*/
-        /*    background: rgba(255, 255, 255, 0.5);*/
-        /*}*/
-
-        /*aside::-webkit-scrollbar-track {*/
-        /*    background: rgba(255, 255, 255, 0.1);*/
-        /*    border-radius: 4px;*/
-        /*}*/
-
-
+        /* Main Content Styles */
         main {
-            padding-left: 30%; /* Adjust this value based on the width of your sidebar, the default col-md-3 in Bootstrap 4 is around 25%, but adding a bit more ensures some spacing */
+            margin-left: 260px;
+            overflow-y: auto;
+            height: calc(100vh - 40px); /* subtracting the top and bottom margin */
             background-color: transparent;
             border-radius: 5px;
             margin: 20px 0;
         }
 
 
+        /* Table Styles */
         table {
             width: 100%;
             border-collapse: collapse;
@@ -111,35 +105,41 @@
         }
 
         th {
-            background-color: rgba(147, 112, 219, 0.8);
+            background-color: #007BFF;
         }
 
+        /* Notification Styles */
         .alert {
             margin-top: 20px;
             font-weight: 400;
         }
 
         #notification-center .btn-info {
-            background-color: rgba(8, 41, 252, 0.7);
+            background-color: #007BFF;
             margin-bottom: 10px;
         }
 
         #notification-center .dropdown-menu {
-            background-color: rgba(8, 41, 252, 0.7);
+            background-color: #007BFF;
         }
 
         #notification-center .dropdown-item:hover {
-            background-color: rgba(105, 35, 253, 0.7);
+            background-color: #304af1;
         }
 
+        /* Flexbox Centering for Main Content */
         .container-fluid.main-content-container > .row {
             display: flex;
             align-items: center;
             height: 100vh;
         }
 
+        .invisible-padding {
+            height: 50px;
+        }
 
     </style>
+
 </head>
 
 <body>
@@ -206,6 +206,10 @@
                 </table>
 
             </section>
+
+
+            <div class="invisible-padding"></div>
+
         </main>
     </div>
 </div>
