@@ -1,5 +1,8 @@
 package Controller;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import convinience.LocalDateTimeSerializer;
 import model.User;
 import service.TakenQuizService;
 import service.UserService;
@@ -13,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -31,11 +35,28 @@ public class UserController extends HttpServlet {
                 int id = Integer.parseInt(req.getParameter("id"));
                 User userById = userService.getUserById(id);
                 if (userById != null) {
-                    out.print(userById.toString());
+                    Gson gson = new GsonBuilder().registerTypeAdapter(LocalDateTime.class, new LocalDateTimeSerializer()).create();
+                    String jsonUser = gson.toJson(userById);
+                    resp.setContentType("application/json");
+                    resp.setCharacterEncoding("UTF-8");
+                    out.print(jsonUser);
                 } else {
                     resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
                 }
                 break;
+
+            case "displayUser":
+                int displayId = Integer.parseInt(req.getParameter("id"));
+                User userId = userService.getUserById(displayId);
+                if (userId != null) {
+                    req.setAttribute("user", userId);
+                    req.getRequestDispatcher("/user.jsp").forward(req, resp);
+                } else {
+                    resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                    out.println("User not found!");
+                }
+                break;
+
 
             case "getAllUsers":
                 List<User> users = userService.getAllUsers();

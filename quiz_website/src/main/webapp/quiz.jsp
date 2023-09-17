@@ -94,16 +94,30 @@
         const quizId = urlParams.get('quizId');
 
 
+
+
+
+        // Inside the fetch .then block in quiz.jsp
         fetch(`http://localhost:8082/QuizController?action=getQuizById&id=${quizId}&format=json`)
             .then(response => response.json())
             .then(data => {
+                // Now fetch the user details using the 'createdByUserId'
+                fetch(`http://localhost:8082/UserController?action=getUserById&id=${data.createdByUserId}`)
+                    .then(userResponse => userResponse.json())
+                    .then(userData => {
+                        const userLink = `<a href="/UserController?action=displayUser&id=${userData.userId}">${userData.username}</a>`;
+
+                        document.getElementById("quizCreatedBy").innerHTML = `Created By: ${userLink}`;
+                    })
+                    .catch(userError => console.error('Error fetching user data:', userError));
+
                 // Populate the page with the quiz data
                 document.getElementById("quizTitle").textContent = data.title;
                 document.getElementById("quizDescription").textContent = data.description;
-                document.getElementById("quizCreatedBy").textContent = `Created By: User ${data.createdByUserId}`;
                 document.getElementById("quizCreatedDate").textContent = `Created Date: ${data.createdDate}`;
             })
             .catch(error => console.error('Error fetching quiz data:', error));
+
     }
 
     function startQuiz() {
